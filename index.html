@@ -1,0 +1,2285 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ScheduleBuddy</title>
+    
+    <!-- PWA Meta Tags for iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ScheduleBuddy">
+    <meta name="theme-color" content="#667eea">
+    
+    <!-- App Icon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='lavender' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23c4b5fd'/%3E%3Cstop offset='100%25' stop-color='%23e9d5ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='40' fill='%231a1a1a'/%3E%3Cpolyline points='31,54 39,62 55,46' fill='none' stroke='url(%23lavender)' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Crect x='67' y='51' width='82' height='7' rx='3.5' fill='url(%23lavender)' opacity='0.9'/%3E%3Ccircle cx='43' cy='90' r='7' fill='url(%23lavender)'/%3E%3Crect x='67' y='86.5' width='64' height='7' rx='3.5' fill='url(%23lavender)' opacity='0.9'/%3E%3Ccircle cx='43' cy='126' r='7' fill='url(%23lavender)'/%3E%3Crect x='67' y='122.5' width='74' height='7' rx='3.5' fill='url(%23lavender)' opacity='0.9'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='lavender' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23c4b5fd'/%3E%3Cstop offset='100%25' stop-color='%23e9d5ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='40' fill='%231a1a1a'/%3E%3Cpolyline points='31,54 39,62 55,46' fill='none' stroke='url(%23lavender)' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Crect x='67' y='51' width='82' height='7' rx='3.5' fill='url(%23lavender)' opacity='0.9'/%3E%3Ccircle cx='43' cy='90' r='7' fill='url(%23lavender)'/%3E%3Crect x='67' y='86.5' width='64' height='7' rx='3.5' fill='url(%23lavender)' opacity='0.9'/%3E%3Ccircle cx='43' cy='126' r='7' fill='url(%23lavender)'/%3E%3Crect x='67' y='122.5' width='74' height='7' rx='3.5' fill='url(%23lavender)' opacity='0.9'/%3E%3C/svg%3E">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-gradient-start: #f5f0eb;
+            --bg-gradient-end: #ede6df;
+            --card-bg: white;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --text-tertiary: #999;
+            --border-color: #e8e8e8;
+            --input-bg: #f8f9fa;
+            --completed-bg: #e8f5e9;
+        }
+
+        body.dark-mode {
+            --bg-gradient-start: #1a1a1a;
+            --bg-gradient-end: #141414;
+            --card-bg: #2a2a2a;
+            --text-primary: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --text-tertiary: #6b6b6b;
+            --border-color: #3a3a3a;
+            --input-bg: #222222;
+            --completed-bg: #1a3a2a;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            padding: 24px;
+            padding-bottom: 90px;
+            transition: background 0.3s ease;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: background 0.3s ease;
+        }
+
+        .user-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .level-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .level-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .level-details h2 {
+            font-size: 18px;
+            color: var(--text-primary);
+        }
+
+        .level-details p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .points {
+            text-align: right;
+        }
+
+        .points-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .points-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            background: var(--border-color);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .streak-info {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .streak-item {
+            text-align: center;
+        }
+
+        .streak-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .streak-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .section {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: background 0.3s ease;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            letter-spacing: -0.3px;
+        }
+
+        .add-button {
+            background: #5568d3;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+        }
+        
+        .add-button:hover {
+            background: #4557c2;
+            transform: translateY(-1px);
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px;
+            background: var(--input-bg);
+            border-radius: 14px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        
+        .task-item:hover {
+            border-color: var(--text-tertiary);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
+            background: var(--completed-bg);
+        }
+
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-name {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .task-item.completed .task-name {
+            text-decoration: line-through;
+        }
+
+        .task-points {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .task-delete {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 16px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            transition: border-color 0.2s ease;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-group button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .achievements {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .achievement {
+            text-align: center;
+            padding: 10px 4px;
+            background: var(--input-bg);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        
+        .achievement:hover {
+            border-color: var(--border-color);
+            transform: translateY(-2px);
+        }
+
+        .achievement.unlocked {
+            background: linear-gradient(135deg, #ffd89b, #19547b);
+            color: white;
+            border-color: transparent;
+        }
+
+        .achievement-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .achievement-name {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .achievement.unlocked .achievement-name {
+            color: white;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+            transition: background 0.3s ease;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            color: var(--text-tertiary);
+            font-size: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            text-align: center;
+            display: none;
+            z-index: 1000;
+        }
+
+        .celebration.show {
+            display: block;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .celebration-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .celebration h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .celebration p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .celebration button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 999;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-tertiary);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--card-bg);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            display: none;
+            z-index: 1000;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .form-group input[type="time"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input[type="time"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .checkbox-group label {
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .task-recurring {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            margin-left: 8px;
+        }
+
+        .task-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .settings-button {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: underline;
+        }
+
+        .backup-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .backup-section button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .backup-export {
+            background: #51cf66;
+            color: white;
+        }
+
+        .backup-import {
+            background: #667eea;
+            color: white;
+        }
+
+        .backup-import input[type="file"] {
+            display: none;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--input-bg);
+            border-radius: 12px;
+        }
+
+        .toggle-switch label {
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .calendar-container {
+            margin-top: 20px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-nav {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .calendar-month {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--text-secondary);
+            padding: 8px 0;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .calendar-day:hover:not(.empty):not(.future) {
+            transform: scale(1.05);
+        }
+
+        .calendar-day.empty {
+            background: transparent;
+            cursor: default;
+        }
+
+        .calendar-day.future, .calendar-day.no-tasks {
+            background: var(--input-bg);
+            color: var(--text-tertiary);
+        }
+
+        .calendar-day.today {
+            background: var(--input-bg);
+            color: var(--text-primary);
+            border: 2px solid #667eea;
+        }
+
+        .calendar-day.green {
+            background: #51cf66;
+            color: white;
+        }
+
+        .calendar-day.yellow {
+            background: #ffd43b;
+            color: #333;
+        }
+
+        .calendar-day.orange {
+            background: #ff922b;
+            color: white;
+        }
+
+        .calendar-day.red {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .day-of-week {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .day-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 1000;
+            max-width: 300px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .day-popup.show {
+            display: block;
+        }
+
+        .day-popup h3 {
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            font-size: 18px;
+        }
+
+        .day-popup p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .day-popup button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .achievement-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 1000;
+            max-width: 300px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .achievement-popup.show {
+            display: block;
+        }
+
+        .achievement-popup .achievement-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .achievement-popup h3 {
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            font-size: 18px;
+        }
+
+        .achievement-popup p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .achievement-popup button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="user-stats">
+                <div class="level-info">
+                    <div class="level-badge" id="levelBadge">1</div>
+                    <div class="level-details">
+                        <h2 id="levelTitle">Beginner</h2>
+                        <p id="xpProgress">0 / 100 XP</p>
+                    </div>
+                </div>
+                <div class="points">
+                    <div class="points-value" id="totalGreenDays" style="color: #51cf66;">0</div>
+                    <div class="points-label">Perfect Days</div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="streak-info">
+                <div class="streak-item">
+                    <div class="streak-number" id="currentStreak">0</div>
+                    <div class="streak-label">Current Streak</div>
+                </div>
+                <div class="streak-item">
+                    <div class="streak-number" id="completedToday">0/0</div>
+                    <div class="streak-label">Done Today</div>
+                </div>
+                <div class="streak-item">
+                    <div class="streak-number" id="bestStreak">0</div>
+                    <div class="streak-label">Best Streak</div>
+                </div>
+            </div>
+            <button onclick="shareStreakProgress()" style="width: 100%; margin-top: 12px; padding: 10px; background: #51cf66; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; letter-spacing: -0.2px; transition: all 0.2s ease;">📤 Share Streak</button>
+        </div>
+
+        <div id="scheduleTab" class="tab-content active">
+            <div class="section">
+                <div class="section-title">
+                    Schedule
+                    <button class="add-button" onclick="toggleAddTask()">+ Add</button>
+                </div>
+                <div class="day-of-week" id="dayOfWeek"></div>
+                <ul class="task-list" id="taskList"></ul>
+            </div>
+        </div>
+
+        <div id="achievementsTab" class="tab-content">
+            <div class="section">
+                <div class="section-title">Your Achievements</div>
+                <div class="achievements" id="achievementsList"></div>
+            </div>
+        </div>
+
+        <div id="calendarTab" class="tab-content">
+            <div class="section">
+                <div class="section-title">
+                    Calendar
+                    <button class="add-button" onclick="shareMonthlyProgress()" style="background: #51cf66;">📤 Share</button>
+                </div>
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button class="calendar-nav" onclick="changeMonth(-1)">←</button>
+                        <div class="calendar-month" id="calendarMonth"></div>
+                        <button class="calendar-nav" onclick="changeMonth(1)">→</button>
+                    </div>
+                    <div id="calendarGrid" class="calendar-grid">
+                        <!-- Calendar will be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="settingsTab" class="tab-content">
+            <div class="section">
+                <div class="section-title">Settings</div>
+                
+                <div class="toggle-switch">
+                    <label>Dark Mode</label>
+                    <label class="switch">
+                        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 10px; color: var(--text-primary);">Notifications</h4>
+                    <button class="add-button" onclick="requestNotificationPermission()">Enable Notifications</button>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;" id="notificationStatus">Notifications disabled</p>
+                </div>
+
+                <div class="backup-section">
+                    <h4 style="margin-bottom: 15px; color: var(--text-primary);">Backup & Restore</h4>
+                    <button class="backup-export" onclick="exportData()">📥 Export My Data</button>
+                    <button class="backup-import" onclick="document.getElementById('importFile').click()">
+                        📤 Import Data
+                    </button>
+                    <input type="file" id="importFile" accept=".json" onchange="importData(event)" />
+                    <button onclick="clearAllData()" style="width: 100%; padding: 12px; margin-top: 10px; background: #ff6b6b; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 500;">🗑️ Clear All Data</button>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 10px;">
+                        Export your data before updating the app to keep your progress!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('schedule')">
+            <div class="nav-icon">✓</div>
+            <div>Schedule</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('calendar')">
+            <div class="nav-icon">📅</div>
+            <div>Calendar</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('achievements')">
+            <div class="nav-icon">🏆</div>
+            <div>Achievements</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('settings')">
+            <div class="nav-icon">⚙️</div>
+            <div>Settings</div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="celebration" id="celebration">
+        <div class="celebration-icon" id="celebrationIcon">🎉</div>
+        <h3 id="celebrationTitle">Great Job!</h3>
+        <p id="celebrationMessage">You earned 10 points!</p>
+        <button onclick="closeCelebration()">Awesome!</button>
+    </div>
+
+    <div class="modal" id="taskModal">
+        <h3>Add Task</h3>
+        <div class="form-group">
+            <label>Task Name</label>
+            <input type="text" id="modalTaskName" placeholder="What do you need to do?" style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 12px; background: var(--input-bg); color: var(--text-primary); font-size: 16px;" />
+        </div>
+        
+        <div class="checkbox-group">
+            <input type="checkbox" id="modalRecurring" />
+            <label for="modalRecurring">Repeat daily</label>
+        </div>
+        
+        <div class="form-group">
+            <label>Task Start Time (optional)</label>
+            <input type="time" id="modalTime" style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 12px; background: var(--input-bg); color: var(--text-primary); font-size: 16px;" />
+        </div>
+        
+        <div class="checkbox-group">
+            <input type="checkbox" id="modalNotification" />
+            <label for="modalNotification">Notify me at start time</label>
+        </div>
+        
+        <div class="modal-buttons">
+            <button class="btn-secondary" onclick="closeTaskModal()">Cancel</button>
+            <button class="btn-primary" onclick="saveTask()">Add Task</button>
+        </div>
+    </div>
+
+    <div class="modal" id="editTaskModal">
+        <h3>Edit Task</h3>
+        <div class="form-group">
+            <label>Task Name</label>
+            <input type="text" id="editTaskName" placeholder="What do you need to do?" style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 12px; background: var(--input-bg); color: var(--text-primary); font-size: 16px;" />
+        </div>
+        
+        <div class="checkbox-group">
+            <input type="checkbox" id="editRecurring" />
+            <label for="editRecurring">Repeat daily</label>
+        </div>
+        
+        <div class="form-group">
+            <label>Task Start Time (optional)</label>
+            <input type="time" id="editTime" style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 12px; background: var(--input-bg); color: var(--text-primary); font-size: 16px;" />
+        </div>
+        
+        <div class="checkbox-group">
+            <input type="checkbox" id="editNotification" />
+            <label for="editNotification">Notify me at start time</label>
+        </div>
+        
+        <div class="modal-buttons">
+            <button class="btn-secondary" onclick="closeEditTaskModal()">Cancel</button>
+            <button class="btn-primary" onclick="updateTask()">Save Changes</button>
+        </div>
+        
+        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color);">
+            <button onclick="deleteTaskFromModal()" style="width: 100%; padding: 12px; background: #ff6b6b; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 500;">Delete Task</button>
+        </div>
+    </div>
+
+    <div class="modal" id="deleteConfirmModal">
+        <h3>Delete Task?</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">Are you sure you want to delete this task? This cannot be undone.</p>
+        <div class="modal-buttons">
+            <button class="btn-secondary" onclick="cancelDelete()">Cancel</button>
+            <button class="btn-primary" style="background: #ff6b6b;" onclick="confirmDelete()">Delete</button>
+        </div>
+    </div>
+
+    <div class="day-popup" id="dayPopup">
+        <h3 id="dayPopupDate"></h3>
+        <p id="dayPopupStats"></p>
+        <button onclick="closeDayPopup()">Close</button>
+    </div>
+
+    <div class="achievement-popup" id="achievementPopup">
+        <div class="achievement-icon" id="achievementPopupIcon"></div>
+        <h3 id="achievementPopupName"></h3>
+        <p id="achievementPopupDescription"></p>
+        <button onclick="closeAchievementPopup()">Close</button>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            level: 1,
+            xp: 0,
+            totalPoints: 0,
+            currentStreak: 0,
+            bestStreak: 0,
+            lastCheckIn: null,
+            tasks: [],
+            completedToday: 0,
+            totalCompleted: 0,
+            achievements: [],
+            notificationsEnabled: false,
+            scheduledNotifications: [], // Array of {taskId, scheduledFor} for persistence across refreshes
+            dailyHistory: {}, // { 'YYYY-MM-DD': { completed: X, total: Y, rating: 'green'/'yellow'/'orange'/'red'/'none' } }
+            darkMode: false,
+            currentCalendarMonth: new Date().getMonth(),
+            currentCalendarYear: new Date().getFullYear()
+        };
+
+        let currentEditingTaskId = null;
+
+        // Achievements Definition
+        const achievementDefs = [
+            { 
+                id: 'first_steps', 
+                name: 'First Steps', 
+                icon: '🎯', 
+                description: 'Avoid getting a red or orange day for 3 days in a row',
+                condition: () => checkConsecutiveGoodDays(3)
+            },
+            { 
+                id: 'level_10', 
+                name: 'Level 10', 
+                icon: '💎', 
+                description: 'Reach level 10',
+                condition: () => gameState.level >= 10 
+            },
+            { 
+                id: 'level_25', 
+                name: 'Level 25', 
+                icon: '🌟', 
+                description: 'Reach level 25',
+                condition: () => gameState.level >= 25 
+            },
+            { 
+                id: 'level_50', 
+                name: 'Level 50', 
+                icon: '⭐', 
+                description: 'Reach level 50',
+                condition: () => gameState.level >= 50 
+            },
+            { 
+                id: 'greener_grass', 
+                name: 'Greener Grass', 
+                icon: '🌱', 
+                description: 'Get green days (finish all tasks) 10 days in a row',
+                condition: () => checkConsecutivePerfectDays(10)
+            },
+            { 
+                id: 'locked_in', 
+                name: 'Locked In', 
+                icon: '🔒', 
+                description: 'Finish all tasks every day for a whole calendar month',
+                condition: () => checkFullMonthPerfect()
+            },
+            { 
+                id: 'super_streaker', 
+                name: 'Super Streaker', 
+                icon: '🔥', 
+                description: 'Reach a streak of 100 good days',
+                condition: () => gameState.bestStreak >= 100 
+            },
+            { 
+                id: 'salvation', 
+                name: 'Salvation', 
+                icon: '👑', 
+                description: 'Reach level 100',
+                condition: () => gameState.level >= 100 
+            }
+        ];
+
+        // Level thresholds - expanded to level 100+
+        function getLevelThreshold(level) {
+            if (level === 0) return 0;
+            if (level === 1) return 0; // Start of level 1
+            
+            // Phase 1: Levels 1-20 use linear formula XP(L) = 100 + 5L
+            if (level <= 20) {
+                return 100 + (5 * level);
+            }
+            
+            // Phase 2: Levels 21-100 use quadratic formula XP(L) = 200 + 0.11(L - 20)²
+            if (level <= 100) {
+                const xp = 200 + (0.11 * Math.pow(level - 20, 2));
+                return Math.round(xp);
+            }
+            
+            // Phase 3: Levels 101+ continue with same increment as 99→100
+            // Level 100 XP = 200 + 0.11(80)² = 200 + 0.11(6400) = 200 + 704 = 904
+            // Level 99 XP = 200 + 0.11(79)² = 200 + 0.11(6241) = 200 + 686.51 ≈ 687
+            // Increment = 904 - 687 = 217
+            const level100XP = 904;
+            const incrementPerLevel = 217;
+            return level100XP + ((level - 100) * incrementPerLevel);
+        }
+
+        function getLevelTitle(level) {
+            if (level >= 100) return 'Hero';
+            if (level >= 90) return 'Legend';
+            if (level >= 80) return 'Champion';
+            if (level >= 70) return 'Virtuoso';
+            if (level >= 60) return 'Master';
+            if (level >= 50) return 'Expert';
+            if (level >= 40) return 'Professional';
+            if (level >= 30) return 'Adept';
+            if (level >= 20) return 'Journeyman';
+            if (level >= 10) return 'Apprentice';
+            if (level >= 5) return 'Novice';
+            return 'Beginner';
+        }
+
+        // Initialize
+        async function init() {
+            await loadGameState();
+            applyDarkMode();
+            checkStreak();
+            checkNotificationPermission();
+            scheduleAllNotifications();
+            startDailyCheckSystem();
+            renderAll();
+        }
+
+        // Storage functions
+        async function loadGameState() {
+            try {
+                const saved = localStorage.getItem('scheduleBuddyGameState');
+                if (saved) {
+                    gameState = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.log('Starting fresh game state');
+            }
+        }
+
+        async function saveGameState() {
+            try {
+                localStorage.setItem('scheduleBuddyGameState', JSON.stringify(gameState));
+            } catch (e) {
+                console.error('Failed to save:', e);
+            }
+        }
+
+        // Check and update streak
+        function checkStreak() {
+            const today = new Date().toDateString();
+            const todayKey = formatDateKey(new Date());
+            const yesterday = new Date(Date.now() - 86400000);
+            const yesterdayKey = formatDateKey(yesterday);
+            
+            if (gameState.lastCheckIn !== today) {
+                // Save yesterday's rating before resetting
+                if (gameState.lastCheckIn) {
+                    const lastDate = new Date(gameState.lastCheckIn);
+                    const lastKey = formatDateKey(lastDate);
+                    saveDayRating(lastKey);
+                }
+                
+                // Calculate new streak
+                const yesterdayRating = gameState.dailyHistory[yesterdayKey]?.rating;
+                if (yesterdayRating === 'green' || yesterdayRating === 'yellow') {
+                    gameState.currentStreak++;
+                } else if (gameState.lastCheckIn !== null) {
+                    gameState.currentStreak = 0;
+                }
+                
+                gameState.bestStreak = Math.max(gameState.bestStreak, gameState.currentStreak);
+                gameState.lastCheckIn = today;
+                gameState.completedToday = 0;
+                
+                // Reset recurring tasks, remove non-recurring completed tasks
+                gameState.tasks = gameState.tasks.map(task => {
+                    if (task.recurring && task.completed) {
+                        return { ...task, completed: false };
+                    }
+                    return task;
+                }).filter(task => task.recurring || !task.completed);
+                
+                saveGameState();
+            }
+        }
+
+        function formatDateKey(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function saveDayRating(dateKey) {
+            const recurringTasks = gameState.tasks.filter(t => t.recurring);
+            const totalTasks = recurringTasks.length;
+            
+            if (totalTasks === 0) {
+                gameState.dailyHistory[dateKey] = { completed: 0, total: 0, rating: 'none' };
+                return;
+            }
+            
+            const completedTasks = gameState.completedToday;
+            const percentage = completedTasks / totalTasks;
+            
+            let rating;
+            if (percentage === 1) rating = 'green';
+            else if (percentage >= 0.75) rating = 'yellow';
+            else if (percentage >= 0.5) rating = 'orange';
+            else rating = 'red';
+            
+            gameState.dailyHistory[dateKey] = { completed: completedTasks, total: totalTasks, rating };
+        }
+
+        // Task Management
+        function toggleAddTask() {
+            document.getElementById('taskModal').classList.add('show');
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('modalTaskName').focus();
+        }
+
+        function closeTaskModal() {
+            document.getElementById('taskModal').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+            document.getElementById('modalTaskName').value = '';
+            document.getElementById('modalRecurring').checked = false;
+            document.getElementById('modalNotification').checked = false;
+            document.getElementById('modalTime').value = '';
+        }
+
+        function saveTask() {
+            const taskName = document.getElementById('modalTaskName').value.trim();
+            const recurring = document.getElementById('modalRecurring').checked;
+            const notification = document.getElementById('modalNotification').checked;
+            const time = document.getElementById('modalTime').value;
+            
+            if (!taskName) return;
+            
+            if (notification && !time) {
+                alert('Please set a start time to enable notifications');
+                return;
+            }
+            
+            const task = {
+                id: Date.now(),
+                name: taskName,
+                completed: false,
+                points: 10,
+                recurring: recurring,
+                notification: notification,
+                time: time || null
+            };
+            
+            gameState.tasks.push(task);
+            
+            if (notification && time) {
+                scheduleNotification(task);
+            }
+            
+            closeTaskModal();
+            saveGameState();
+            renderTasks();
+        }
+
+        function openEditTaskModal(taskId) {
+            const task = gameState.tasks.find(t => t.id === taskId);
+            if (!task) return;
+            
+            currentEditingTaskId = taskId;
+            
+            document.getElementById('editTaskName').value = task.name;
+            document.getElementById('editRecurring').checked = task.recurring || false;
+            document.getElementById('editNotification').checked = task.notification || false;
+            document.getElementById('editTime').value = task.time || '';
+            
+            document.getElementById('editTaskModal').classList.add('show');
+            document.getElementById('overlay').classList.add('show');
+        }
+
+        function closeEditTaskModal() {
+            document.getElementById('editTaskModal').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+            currentEditingTaskId = null;
+        }
+
+        function updateTask() {
+            if (currentEditingTaskId === null) return;
+            
+            const task = gameState.tasks.find(t => t.id === currentEditingTaskId);
+            if (!task) return;
+            
+            const taskName = document.getElementById('editTaskName').value.trim();
+            const recurring = document.getElementById('editRecurring').checked;
+            const notification = document.getElementById('editNotification').checked;
+            const time = document.getElementById('editTime').value;
+            
+            if (!taskName) return;
+            
+            if (notification && !time) {
+                alert('Please set a start time to enable notifications');
+                return;
+            }
+            
+            // Update task properties
+            task.name = taskName;
+            task.recurring = recurring;
+            task.notification = notification;
+            task.time = time || null;
+            
+            // Reschedule notifications if needed
+            if (notification && time) {
+                scheduleNotification(task);
+            }
+            
+            closeEditTaskModal();
+            saveGameState();
+            renderTasks();
+        }
+
+        function deleteTaskFromModal() {
+            console.log("=== DELETE FUNCTION START ===");
+            console.log("currentEditingTaskId:", currentEditingTaskId);
+            
+            if (currentEditingTaskId === null) {
+                console.log("No task selected - returning");
+                return;
+            }
+            
+            console.log("Looking for task with ID:", currentEditingTaskId);
+            const taskToDelete = gameState.tasks.find(t => t.id === currentEditingTaskId);
+            console.log("Task found:", taskToDelete);
+            
+            if (!taskToDelete) {
+                console.log("Task not found - returning");
+                return;
+            }
+            
+            // Hide edit modal but keep overlay visible
+            document.getElementById('editTaskModal').classList.remove('show');
+            // Show custom confirmation modal
+            document.getElementById('deleteConfirmModal').classList.add('show');
+            // Keep overlay shown
+        }
+
+        function closeDeleteConfirm() {
+            document.getElementById('deleteConfirmModal').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        function cancelDelete() {
+            document.getElementById('deleteConfirmModal').classList.remove('show');
+            // Go back to edit modal (keep overlay visible)
+            document.getElementById('editTaskModal').classList.add('show');
+        }
+
+        function confirmDelete() {
+            console.log("Delete confirmed, calling deleteTask with ID:", currentEditingTaskId);
+            closeDeleteConfirm();
+            deleteTask(currentEditingTaskId);
+            closeEditTaskModal();
+            console.log("=== DELETE FUNCTION END ===");
+        }
+
+        function addTask() {
+            toggleAddTask();
+        }
+
+        function toggleTask(taskId) {
+            const task = gameState.tasks.find(t => t.id === taskId);
+            if (task && !task.completed) {
+                task.completed = true;
+                gameState.completedToday++;
+                gameState.totalCompleted++;
+                addXP(task.points);
+                checkAchievements();
+                showCelebration('Task Complete! 🎯', `+${task.points} XP`);
+                
+                // Update today's calendar color in real-time
+                const todayKey = formatDateKey(new Date());
+                saveDayRating(todayKey);
+                
+                saveGameState();
+                renderAll();
+            }
+        }
+
+        function deleteTask(taskId) {
+            console.log("deleteTask called with ID:", taskId, "type:", typeof taskId);
+            console.log("Tasks before delete:", gameState.tasks.length);
+            console.log("All task IDs:", gameState.tasks.map(t => ({id: t.id, type: typeof t.id})));
+            
+            // Ensure taskId is a number for comparison
+            const numericTaskId = typeof taskId === 'number' ? taskId : parseInt(taskId);
+            
+            gameState.tasks = gameState.tasks.filter(t => {
+                const taskIdMatch = t.id !== numericTaskId;
+                console.log(`Comparing task ${t.id} (${typeof t.id}) with ${numericTaskId} (${typeof numericTaskId}): keep=${taskIdMatch}`);
+                return taskIdMatch;
+            });
+            
+            console.log("Tasks after delete:", gameState.tasks.length);
+            saveGameState();
+            renderTasks();
+        }
+
+        // XP and Leveling
+        function addXP(points) {
+            const oldLevel = gameState.level;
+            gameState.xp += points;
+            gameState.totalPoints += points;
+            
+            // Check for level up
+            let threshold = getLevelThreshold(gameState.level + 1);
+            while (gameState.xp >= threshold) {
+                levelUp();
+                threshold = getLevelThreshold(gameState.level + 1);
+            }
+            
+            // Prevent level down - keep XP at minimum for current level
+            // The minimum XP for a level is the threshold of the previous level
+            const minXPForLevel = gameState.level > 1 ? getLevelThreshold(gameState.level) : 0;
+            if (gameState.xp < minXPForLevel) {
+                gameState.xp = minXPForLevel;
+            }
+        }
+
+        function subtractXP(points) {
+            gameState.xp -= points;
+            
+            // Prevent level down - keep XP at minimum for current level
+            // The minimum XP for current level is the threshold to reach that level
+            const minXPForLevel = getLevelThreshold(gameState.level);
+            if (gameState.xp < minXPForLevel) {
+                gameState.xp = minXPForLevel;
+            }
+        }
+
+        function levelUp() {
+            gameState.level++;
+            showCelebration('Level Up! 🎉', `You reached Level ${gameState.level}!`, '🌟');
+            checkAchievements();
+        }
+
+        // Achievements
+        function checkAchievements() {
+            achievementDefs.forEach(def => {
+                if (!gameState.achievements.includes(def.id) && def.condition()) {
+                    gameState.achievements.push(def.id);
+                    showCelebration('Achievement Unlocked! 🏆', def.name, def.icon);
+                }
+            });
+        }
+
+        // UI Rendering
+        function renderAll() {
+            renderHeader();
+            renderTasks();
+            renderAchievements();
+            renderCalendar();
+        }
+
+        function renderHeader() {
+            const currentThreshold = getLevelThreshold(gameState.level);
+            const nextThreshold = getLevelThreshold(gameState.level + 1);
+            const progress = ((gameState.xp - currentThreshold) / (nextThreshold - currentThreshold)) * 100;
+            
+            document.getElementById('levelBadge').textContent = gameState.level;
+            document.getElementById('levelTitle').textContent = getLevelTitle(gameState.level);
+            document.getElementById('xpProgress').textContent = `${gameState.xp} / ${nextThreshold} XP`;
+            document.getElementById('progressFill').style.width = `${Math.min(progress, 100)}%`;
+            
+            // Calculate total green days
+            const greenDays = Object.values(gameState.dailyHistory).filter(day => day.rating === 'green').length;
+            document.getElementById('totalGreenDays').textContent = greenDays;
+            
+            document.getElementById('currentStreak').textContent = gameState.currentStreak;
+            document.getElementById('bestStreak').textContent = gameState.bestStreak;
+            
+            // Update Done Today with x/y format
+            const totalRecurring = gameState.tasks.filter(t => t.recurring).length;
+            document.getElementById('completedToday').textContent = `${gameState.completedToday}/${totalRecurring}`;
+        }
+
+        function renderTasks() {
+            const taskList = document.getElementById('taskList');
+            const dayOfWeekEl = document.getElementById('dayOfWeek');
+            
+            // Display day of week
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const today = new Date();
+            dayOfWeekEl.textContent = days[today.getDay()];
+            
+            if (gameState.tasks.length === 0) {
+                taskList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <div>No tasks yet. Add one to get started!</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            taskList.innerHTML = gameState.tasks.map(task => `
+                <li class="task-item ${task.completed ? 'completed' : ''}" data-task-id="${task.id}">
+                    <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} 
+                           onchange="toggleTask(${task.id})" ${task.completed ? 'disabled' : ''}>
+                    <div class="task-content">
+                        <div class="task-name">
+                            ${task.name}
+                            ${task.recurring ? '<span class="task-recurring">Daily</span>' : ''}
+                        </div>
+                        <div class="task-points">
+                            +${task.points} XP
+                            ${task.notification && task.time ? ` • 🔔 ${formatTime(task.time)}` : task.time ? ` • ${formatTime(task.time)}` : ''}
+                        </div>
+                    </div>
+                </li>
+            `).join('');
+            
+            // Add long-press handlers to each task item
+            document.querySelectorAll('.task-item').forEach(item => {
+                let pressTimer;
+                const taskId = parseInt(item.dataset.taskId);
+                
+                // Touch events for mobile
+                item.addEventListener('touchstart', (e) => {
+                    // Don't trigger if touching checkbox
+                    if (e.target.classList.contains('task-checkbox')) {
+                        return;
+                    }
+                    pressTimer = setTimeout(() => {
+                        openEditTaskModal(taskId);
+                    }, 500); // 500ms hold
+                });
+                
+                item.addEventListener('touchend', () => {
+                    clearTimeout(pressTimer);
+                });
+                
+                item.addEventListener('touchmove', () => {
+                    clearTimeout(pressTimer);
+                });
+                
+                // Mouse events for desktop
+                item.addEventListener('mousedown', (e) => {
+                    if (e.target.classList.contains('task-checkbox')) {
+                        return;
+                    }
+                    pressTimer = setTimeout(() => {
+                        openEditTaskModal(taskId);
+                    }, 500);
+                });
+                
+                item.addEventListener('mouseup', () => {
+                    clearTimeout(pressTimer);
+                });
+                
+                item.addEventListener('mouseleave', () => {
+                    clearTimeout(pressTimer);
+                });
+            });
+        }
+
+        function formatTime(time) {
+            const [hours, minutes] = time.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            return `${displayHour}:${minutes} ${ampm}`;
+        }
+
+        function renderAchievements() {
+            const list = document.getElementById('achievementsList');
+            list.innerHTML = achievementDefs.map(def => `
+                <div class="achievement ${gameState.achievements.includes(def.id) ? 'unlocked' : ''}" onclick="showAchievementPopup('${def.id}')">
+                    <div class="achievement-icon">${def.icon}</div>
+                    <div class="achievement-name">${def.name}</div>
+                </div>
+            `).join('');
+        }
+
+        function showAchievementPopup(achievementId) {
+            const achievement = achievementDefs.find(a => a.id === achievementId);
+            if (!achievement) return;
+            
+            document.getElementById('achievementPopupIcon').textContent = achievement.icon;
+            document.getElementById('achievementPopupName').textContent = achievement.name;
+            document.getElementById('achievementPopupDescription').textContent = achievement.description;
+            
+            document.getElementById('achievementPopup').classList.add('show');
+            document.getElementById('overlay').classList.add('show');
+        }
+
+        function closeAchievementPopup() {
+            document.getElementById('achievementPopup').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        function toggleAchievementDescription(achievementId) {
+            // This function is no longer needed but kept for compatibility
+        }
+
+        function renderCalendar() {
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            const month = gameState.currentCalendarMonth;
+            const year = gameState.currentCalendarYear;
+            
+            document.getElementById('calendarMonth').textContent = `${monthNames[month]} ${year}`;
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            const todayKey = formatDateKey(today);
+            
+            let calendarHTML = '';
+            
+            // Add day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                calendarHTML += `<div class="calendar-day-header">${day}</div>`;
+            });
+            
+            // Empty cells before the first day
+            for (let i = 0; i < firstDay; i++) {
+                calendarHTML += '<div class="calendar-day empty"></div>';
+            }
+            
+            // Days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const dateKey = formatDateKey(date);
+                const dayData = gameState.dailyHistory[dateKey];
+                
+                let className = 'calendar-day';
+                let onClick = '';
+                
+                if (dateKey === todayKey) {
+                    className += ' today';
+                } else if (date > today) {
+                    className += ' future';
+                } else if (!dayData || dayData.rating === 'none') {
+                    className += ' no-tasks';
+                } else {
+                    className += ` ${dayData.rating}`;
+                    onClick = `onclick="showDayPopup('${dateKey}')"`;
+                }
+                
+                calendarHTML += `<div class="${className}" ${onClick}>${day}</div>`;
+            }
+            
+            document.getElementById('calendarGrid').innerHTML = calendarHTML;
+        }
+
+        function showDayPopup(dateKey) {
+            const dayData = gameState.dailyHistory[dateKey];
+            if (!dayData || dayData.rating === 'none') return;
+            
+            const date = new Date(dateKey);
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            const dateStr = `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+            
+            document.getElementById('dayPopupDate').textContent = dateStr;
+            document.getElementById('dayPopupStats').textContent = 
+                `Completed ${dayData.completed} out of ${dayData.total} tasks`;
+            
+            document.getElementById('dayPopup').classList.add('show');
+            document.getElementById('overlay').classList.add('show');
+        }
+
+        function closeDayPopup() {
+            document.getElementById('dayPopup').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        function changeMonth(direction) {
+            gameState.currentCalendarMonth += direction;
+            
+            if (gameState.currentCalendarMonth > 11) {
+                gameState.currentCalendarMonth = 0;
+                gameState.currentCalendarYear++;
+            } else if (gameState.currentCalendarMonth < 0) {
+                gameState.currentCalendarMonth = 11;
+                gameState.currentCalendarYear--;
+            }
+            
+            renderCalendar();
+            saveGameState();
+        }
+
+        // Navigation
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(`${tab}Tab`).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            if (tab === 'calendar') {
+                renderCalendar();
+            }
+        }
+
+        // Dark Mode
+        function toggleDarkMode() {
+            gameState.darkMode = !gameState.darkMode;
+            applyDarkMode();
+            saveGameState();
+        }
+
+        function applyDarkMode() {
+            if (gameState.darkMode) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('darkModeToggle').checked = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.getElementById('darkModeToggle').checked = false;
+            }
+        }
+
+        // Daily Check System - Penalizes missed recurring tasks at midnight
+        function startDailyCheckSystem() {
+            // Check every minute if we've crossed midnight
+            setInterval(() => {
+                const now = new Date();
+                const currentDay = now.toDateString();
+                
+                // If we've entered a new day
+                if (gameState.lastCheckIn && gameState.lastCheckIn !== currentDay) {
+                    processMissedTasks();
+                    checkStreak();
+                    renderAll();
+                }
+            }, 60000); // Check every minute
+        }
+
+        function processMissedTasks() {
+            const recurringTasks = gameState.tasks.filter(t => t.recurring);
+            const missedTasks = recurringTasks.filter(t => !t.completed);
+            
+            // Subtract XP for each missed recurring task (half of what it would give)
+            missedTasks.forEach(task => {
+                const penalty = Math.floor(task.points / 2);
+                subtractXP(penalty);
+            });
+            
+            if (missedTasks.length > 0) {
+                saveGameState();
+            }
+        }
+
+        // Achievement checking functions
+        function checkConsecutiveGoodDays(days) {
+            const dates = Object.keys(gameState.dailyHistory).sort();
+            let consecutive = 0;
+            
+            for (let i = dates.length - 1; i >= 0; i--) {
+                const rating = gameState.dailyHistory[dates[i]].rating;
+                if (rating === 'green' || rating === 'yellow') {
+                    consecutive++;
+                    if (consecutive >= days) return true;
+                } else if (rating !== 'none') {
+                    break; // Stop at first bad day
+                }
+            }
+            
+            return false;
+        }
+
+        function checkConsecutivePerfectDays(days) {
+            const dates = Object.keys(gameState.dailyHistory).sort();
+            let consecutive = 0;
+            
+            for (let i = dates.length - 1; i >= 0; i--) {
+                const rating = gameState.dailyHistory[dates[i]].rating;
+                if (rating === 'green') {
+                    consecutive++;
+                    if (consecutive >= days) return true;
+                } else {
+                    break;
+                }
+            }
+            
+            return false;
+        }
+
+        function checkFullMonthPerfect() {
+            // Check if any complete calendar month has all green days
+            const monthData = {};
+            
+            Object.keys(gameState.dailyHistory).forEach(dateKey => {
+                const [year, month] = dateKey.split('-');
+                const key = `${year}-${month}`;
+                if (!monthData[key]) monthData[key] = [];
+                monthData[key].push(gameState.dailyHistory[dateKey]);
+            });
+            
+            for (const monthKey in monthData) {
+                const [year, month] = monthKey.split('-');
+                const daysInMonth = new Date(parseInt(year), parseInt(month), 0).getDate();
+                const monthDays = monthData[monthKey];
+                
+                // Must have data for every day of the month
+                if (monthDays.length === daysInMonth) {
+                    // All must be green and none can be 'none'
+                    if (monthDays.every(day => day.rating === 'green')) {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        }
+
+        // Celebrations
+        function showCelebration(title, message, icon = '🎉') {
+            document.getElementById('celebrationIcon').textContent = icon;
+            document.getElementById('celebrationTitle').textContent = title;
+            document.getElementById('celebrationMessage').textContent = message;
+            document.getElementById('celebration').classList.add('show');
+            document.getElementById('overlay').classList.add('show');
+        }
+
+        function closeCelebration() {
+            document.getElementById('celebration').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        // Notification Functions
+        async function requestNotificationPermission() {
+            if (!('Notification' in window)) {
+                alert('This browser does not support notifications');
+                return;
+            }
+            
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                gameState.notificationsEnabled = true;
+                await saveGameState();
+                updateNotificationStatus();
+                scheduleAllNotifications();
+                alert('Notifications enabled! You\'ll be reminded when tasks are scheduled.');
+            }
+        }
+
+        function checkNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                gameState.notificationsEnabled = true;
+            }
+            updateNotificationStatus();
+        }
+
+        function updateNotificationStatus() {
+            const status = document.getElementById('notificationStatus');
+            if (status) {
+                status.textContent = gameState.notificationsEnabled 
+                    ? 'Notifications enabled ✓' 
+                    : 'Notifications disabled';
+                status.style.color = gameState.notificationsEnabled ? '#51cf66' : '#666';
+            }
+        }
+
+        function scheduleNotification(task) {
+            if (!task.notification || !task.time || !gameState.notificationsEnabled) return;
+            
+            const [hours, minutes] = task.time.split(':');
+            const now = new Date();
+            const scheduledTime = new Date();
+            scheduledTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+            
+            // If time has passed today, schedule for tomorrow
+            if (scheduledTime <= now) {
+                scheduledTime.setDate(scheduledTime.getDate() + 1);
+            }
+            
+            const delay = scheduledTime.getTime() - now.getTime();
+            
+            const timeoutId = setTimeout(() => {
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification('ScheduleBuddy Reminder', {
+                        body: task.name,
+                        icon: '✓',
+                        tag: `task-${task.id}`
+                    });
+                }
+                
+                // Remove this timeout from scheduled list
+                gameState.scheduledNotifications = gameState.scheduledNotifications.filter(
+                    s => s.taskId !== task.id
+                );
+                
+                // Reschedule for next day if recurring
+                if (task.recurring) {
+                    scheduleNotification(task);
+                } else {
+                    saveGameState();
+                }
+            }, delay);
+            
+            // Store scheduled notification info (not the timeout itself, but the scheduling details)
+            const existingIndex = gameState.scheduledNotifications.findIndex(s => s.taskId === task.id);
+            const notificationInfo = {
+                taskId: task.id,
+                scheduledFor: scheduledTime.getTime()
+            };
+            
+            if (existingIndex >= 0) {
+                gameState.scheduledNotifications[existingIndex] = notificationInfo;
+            } else {
+                gameState.scheduledNotifications.push(notificationInfo);
+            }
+            
+            saveGameState();
+        }
+
+        function scheduleAllNotifications() {
+            // Clear existing scheduled notifications data (we'll rebuild it)
+            gameState.scheduledNotifications = [];
+            
+            // Schedule all tasks with notifications
+            gameState.tasks.forEach(task => {
+                if (task.notification && task.time) {
+                    scheduleNotification(task);
+                }
+            });
+        }
+
+        // Backup and Restore Functions
+        function exportData() {
+            const dataStr = JSON.stringify(gameState, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `schedulebuddy-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            showCelebration('Data Exported! 💾', 'Your progress has been saved to a file.');
+        }
+
+        async function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Validate the data has the required fields
+                    if (importedData.level !== undefined && importedData.tasks !== undefined) {
+                        gameState = importedData;
+                        await saveGameState();
+                        scheduleAllNotifications();
+                        renderAll();
+                        showCelebration('Data Restored! 📥', 'Your progress has been restored successfully.');
+                    } else {
+                        alert('Invalid backup file format');
+                    }
+                } catch (error) {
+                    alert('Error reading backup file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Reset file input
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ This will delete ALL your data including tasks, progress, and achievements. This cannot be undone. Are you sure?')) {
+                localStorage.removeItem('scheduleBuddyGameState');
+                location.reload();
+            }
+        }
+
+        // Handle Enter key in task input
+        document.addEventListener('DOMContentLoaded', () => {
+            const modalTaskName = document.getElementById('modalTaskName');
+            if (modalTaskName) {
+                modalTaskName.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        saveTask();
+                    }
+                });
+            }
+            
+            // Close modals when clicking overlay
+            document.getElementById('overlay').addEventListener('click', () => {
+                closeTaskModal();
+                closeCelebration();
+                closeDayPopup();
+                closeAchievementPopup();
+                closeDeleteConfirm();
+                closeEditTaskModal();
+            });
+        });
+
+        // Share Streak Progress
+        function shareStreakProgress() {
+            // Get the last 7 days of history
+            const today = new Date();
+            const last7Days = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateKey = formatDateKey(date);
+                const dayData = gameState.dailyHistory[dateKey];
+                
+                let emoji;
+                if (dateKey === formatDateKey(today)) {
+                    // Today - use current status
+                    const recurringTasks = gameState.tasks.filter(t => t.recurring);
+                    const totalTasks = recurringTasks.length;
+                    if (totalTasks === 0) {
+                        emoji = '⬜';
+                    } else {
+                        const percentage = gameState.completedToday / totalTasks;
+                        if (percentage === 1) emoji = '🟩';
+                        else if (percentage >= 0.75) emoji = '🟨';
+                        else if (percentage >= 0.5) emoji = '🟧';
+                        else emoji = '🟥';
+                    }
+                } else if (!dayData || dayData.rating === 'none') {
+                    emoji = '⬜';
+                } else {
+                    if (dayData.rating === 'green') emoji = '🟩';
+                    else if (dayData.rating === 'yellow') emoji = '🟨';
+                    else if (dayData.rating === 'orange') emoji = '🟧';
+                    else if (dayData.rating === 'red') emoji = '🟥';
+                    else emoji = '⬜';
+                }
+                
+                last7Days.push(emoji);
+            }
+            
+            // Calculate total days tracked (for "Day X")
+            const totalDays = Object.keys(gameState.dailyHistory).length + 1; // +1 for today
+            
+            // Build the share message
+            const shareText = `ScheduleBuddy - Day ${totalDays}
+
+${last7Days.join('')}
+
+Current Streak: ${gameState.currentStreak} Days
+Best Streak: ${gameState.bestStreak} Days`;
+            
+            // Copy to clipboard
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showCelebration('Copied to Clipboard! 📋', 'Share your streak with friends!', '📤');
+                }).catch(err => {
+                    fallbackCopyToClipboard(shareText);
+                });
+            } else {
+                fallbackCopyToClipboard(shareText);
+            }
+        }
+
+        // Share Monthly Progress
+        function shareMonthlyProgress() {
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            const month = gameState.currentCalendarMonth;
+            const year = gameState.currentCalendarYear;
+            const monthName = monthNames[month];
+            
+            // Get first day of month and total days
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            const todayKey = formatDateKey(today);
+            
+            // Build the calendar grid
+            let calendarLines = [];
+            let currentLine = '';
+            
+            // Add empty squares for days before month starts
+            for (let i = 0; i < firstDay; i++) {
+                currentLine += '⬜';
+            }
+            
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const dateKey = formatDateKey(date);
+                const dayData = gameState.dailyHistory[dateKey];
+                
+                let emoji;
+                if (dateKey === todayKey) {
+                    // Today - use current status
+                    const recurringTasks = gameState.tasks.filter(t => t.recurring);
+                    const totalTasks = recurringTasks.length;
+                    if (totalTasks === 0) {
+                        emoji = '⬜';
+                    } else {
+                        const percentage = gameState.completedToday / totalTasks;
+                        if (percentage === 1) emoji = '🟩';
+                        else if (percentage >= 0.75) emoji = '🟨';
+                        else if (percentage >= 0.5) emoji = '🟧';
+                        else emoji = '🟥';
+                    }
+                } else if (date > today) {
+                    // Future days
+                    emoji = '⬜';
+                } else if (!dayData || dayData.rating === 'none') {
+                    // Past days with no tasks
+                    emoji = '⬜';
+                } else {
+                    // Past days with ratings
+                    if (dayData.rating === 'green') emoji = '🟩';
+                    else if (dayData.rating === 'yellow') emoji = '🟨';
+                    else if (dayData.rating === 'orange') emoji = '🟧';
+                    else if (dayData.rating === 'red') emoji = '🟥';
+                    else emoji = '⬜';
+                }
+                
+                currentLine += emoji;
+                
+                // Start new line after Sunday (day 0) or if we hit 7 days
+                if ((firstDay + day) % 7 === 0) {
+                    calendarLines.push(currentLine);
+                    currentLine = '';
+                }
+            }
+            
+            // Add remaining line if not empty
+            if (currentLine) {
+                calendarLines.push(currentLine);
+            }
+            
+            // Calculate perfect days this month
+            let perfectDaysThisMonth = 0;
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                if (date > today) break; // Don't count future days
+                
+                const dateKey = formatDateKey(date);
+                const dayData = gameState.dailyHistory[dateKey];
+                
+                if (dateKey === todayKey) {
+                    // Check if today is perfect
+                    const recurringTasks = gameState.tasks.filter(t => t.recurring);
+                    const totalTasks = recurringTasks.length;
+                    if (totalTasks > 0 && gameState.completedToday === totalTasks) {
+                        perfectDaysThisMonth++;
+                    }
+                } else if (dayData && dayData.rating === 'green') {
+                    perfectDaysThisMonth++;
+                }
+            }
+            
+            // Calculate total perfect days
+            const totalPerfectDays = Object.values(gameState.dailyHistory).filter(day => day.rating === 'green').length;
+            // Add today if it's perfect
+            const recurringTasks = gameState.tasks.filter(t => t.recurring);
+            const totalTasks = recurringTasks.length;
+            const todayIsPerfect = totalTasks > 0 && gameState.completedToday === totalTasks;
+            const adjustedTotal = todayIsPerfect ? totalPerfectDays + 1 : totalPerfectDays;
+            
+            // Build the share message
+            const shareText = `ScheduleBuddy - ${monthName}
+
+${calendarLines.join('\n')}
+
+Perfect Days This Month: ${perfectDaysThisMonth}
+Total Perfect Days: ${adjustedTotal}`;
+            
+            // Copy to clipboard
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showCelebration('Copied to Clipboard! 📋', 'Share your progress with friends!', '📤');
+                }).catch(err => {
+                    // Fallback for older browsers
+                    fallbackCopyToClipboard(shareText);
+                });
+            } else {
+                fallbackCopyToClipboard(shareText);
+            }
+        }
+        
+        function fallbackCopyToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showCelebration('Copied to Clipboard! 📋', 'Share your progress with friends!', '📤');
+            } catch (err) {
+                alert('Failed to copy. Please try again.');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        // Start the app
+        init();
+    </script>
+</body>
+</html>
