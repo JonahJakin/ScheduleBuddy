@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ScheduleBuddy</title>
     
     <!-- PWA Meta Tags for iOS -->
@@ -55,8 +55,8 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
             min-height: 100vh;
-            padding: 24px;
-            padding-bottom: 90px;
+            padding: calc(24px + env(safe-area-inset-top)) 24px 24px;
+            padding-bottom: calc(90px + env(safe-area-inset-bottom));
             transition: background 0.3s ease;
         }
 
@@ -660,7 +660,8 @@
             background: var(--card-bg);
             display: flex;
             justify-content: space-around;
-            padding: 12px 0;
+            padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+            border-radius: 20px 20px 0 0;
             box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
             transition: background 0.3s ease;
         }
