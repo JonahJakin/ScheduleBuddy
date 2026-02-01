@@ -1486,7 +1486,7 @@
             totalCompleted: 0,
             achievements: [],
             notificationsEnabled: false,
-            scheduledNotifications: [], // Array of {taskId, scheduledFor} for persistence across refreshes
+            notifiedToday: {}, // { taskId: 'YYYY-MM-DD' } — tracks which tasks have fired today
             dailyHistory: {}, // { 'YYYY-MM-DD': { completed: X, total: Y, rating: 'green'/'yellow'/'orange'/'red'/'none' } }
             darkMode: false,
             scheduleView: 'timeline',
@@ -1620,7 +1620,7 @@
             });
             checkStreak();
             checkNotificationPermission();
-            scheduleAllNotifications();
+            startNotificationPoller();
             startDailyCheckSystem();
             renderAll();
         }
@@ -1796,10 +1796,6 @@
             
             gameState.tasks.push(task);
             
-            if (notification && time) {
-                scheduleNotification(task);
-            }
-            
             closeTaskModal();
             saveGameState();
             renderTasks();
@@ -1862,11 +1858,6 @@
             task.notification = notification;
             task.time = time || null;
             task.icon = getIconFromTrigger('edit');
-            
-            // Reschedule notifications if needed
-            if (notification && time) {
-                scheduleNotification(task);
-            }
             
             closeEditTaskModal();
             saveGameState();
@@ -2594,7 +2585,6 @@
                 gameState.notificationsEnabled = true;
                 await saveGameState();
                 updateNotificationStatus();
-                scheduleAllNotifications();
                 alert('Notifications enabled! You\'ll be reminded when tasks are scheduled.');
             }
         }
@@ -2630,78 +2620,56 @@
 
         async function disableNotifications() {
             gameState.notificationsEnabled = false;
-            // Clear all scheduled notification timeouts
-            gameState.scheduledNotifications.forEach(n => {
-                if (n.timeoutId) clearTimeout(n.timeoutId);
-            });
-            gameState.scheduledNotifications = [];
+            gameState.notifiedToday = {};
             await saveGameState();
             updateNotificationStatus();
         }
 
-        function scheduleNotification(task, batch = false) {
-            if (!task.notification || !task.time || !gameState.notificationsEnabled) return;
-            
-            const [hours, minutes] = task.time.split(':');
+        // Polling-based notification check — runs every 30 seconds.
+        // Tracks which tasks have already fired today so we don't double-notify.
+        // gameState.notifiedToday = { taskId: "YYYY-MM-DD", ... }
+        function startNotificationPoller() {
+            checkNotifications(); // immediate first check
+            setInterval(checkNotifications, 30000);
+        }
+
+        function checkNotifications() {
+            if (!gameState.notificationsEnabled) return;
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
             const now = new Date();
-            const scheduledTime = new Date();
-            scheduledTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-            
-            // If time has passed today, schedule for tomorrow
-            if (scheduledTime <= now) {
-                scheduledTime.setDate(scheduledTime.getDate() + 1);
-            }
-            
-            const delay = scheduledTime.getTime() - now.getTime();
-            
-            const timeoutId = setTimeout(() => {
-                if ('Notification' in window && Notification.permission === 'granted') {
+            const todayKey = now.getFullYear() + '-' +
+                String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                String(now.getDate()).padStart(2, '0');
+
+            if (!gameState.notifiedToday) gameState.notifiedToday = {};
+
+            gameState.tasks.forEach(task => {
+                if (!task.notification || !task.time) return;
+                // Already fired for this task today?
+                if (gameState.notifiedToday[task.id] === todayKey) return;
+
+                const [hours, minutes] = task.time.split(':');
+                const taskTime = new Date();
+                taskTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+                // Fire if we've reached or passed the task time (but not more than 5 min past)
+                const diff = now.getTime() - taskTime.getTime();
+                if (diff >= 0 && diff <= 300000) {
                     new Notification('ScheduleBuddy Reminder', {
                         body: task.name,
                         icon: '✓',
                         tag: `task-${task.id}`
                     });
-                }
-                
-                // Remove this timeout from scheduled list
-                gameState.scheduledNotifications = gameState.scheduledNotifications.filter(
-                    s => s.taskId !== task.id
-                );
-                
-                // Reschedule for next day if recurring
-                if (task.recurring) {
-                    scheduleNotification(task);
-                } else {
+                    gameState.notifiedToday[task.id] = todayKey;
                     saveGameState();
                 }
-            }, delay);
-            
-            // Store scheduled notification info (not the timeout itself, but the scheduling details)
-            const existingIndex = gameState.scheduledNotifications.findIndex(s => s.taskId === task.id);
-            const notificationInfo = {
-                taskId: task.id,
-                scheduledFor: scheduledTime.getTime()
-            };
-            
-            if (existingIndex >= 0) {
-                gameState.scheduledNotifications[existingIndex] = notificationInfo;
-            } else {
-                gameState.scheduledNotifications.push(notificationInfo);
-            }
-            
-            if (!batch) saveGameState();
+            });
         }
 
+        // Called on init — no-op now since the poller handles everything
         function scheduleAllNotifications() {
-            gameState.scheduledNotifications = [];
-            
-            gameState.tasks.forEach(task => {
-                if (task.notification && task.time) {
-                    scheduleNotification(task, true); // batch: skip per-task save
-                }
-            });
-            
-            saveGameState(); // single write after all notifications are set up
+            // Poller-based system needs no upfront scheduling
         }
 
         // Backup and Restore Functions
@@ -2731,7 +2699,6 @@
                     if (importedData.level !== undefined && importedData.tasks !== undefined) {
                         gameState = importedData;
                         await saveGameState();
-                        scheduleAllNotifications();
                         renderAll();
                         showCelebration('Data Restored! 📥', 'Your progress has been restored successfully.');
                     } else {
