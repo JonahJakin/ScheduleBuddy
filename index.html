@@ -1473,6 +1473,44 @@
     </div>
 
     <script>
+        // Register Service Worker for background notifications
+        let swRegistration = null;
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(reg => {
+                swRegistration = reg;
+            }).catch(() => {});
+        }
+
+        // Sends current notification state to the Service Worker
+        function syncNotificationsToSW() {
+            if (!swRegistration || !swRegistration.active) return;
+
+            if (!gameState.notificationsEnabled) {
+                swRegistration.active.postMessage({ type: 'DISABLE' });
+                return;
+            }
+
+            const now = new Date();
+            const todayKey = now.getFullYear() + '-' +
+                String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                String(now.getDate()).padStart(2, '0');
+
+            const taskList = gameState.tasks
+                .filter(t => t.notification && t.time)
+                .map(t => ({
+                    id: t.id,
+                    name: t.name,
+                    time: t.time,
+                    notifiedToday: (gameState.notifiedToday || {})[t.id] === todayKey
+                }));
+
+            swRegistration.active.postMessage({
+                type: 'UPDATE_TASKS',
+                tasks: taskList,
+                enabled: true
+            });
+        }
+
         // Game State
         let gameState = {
             level: 1,
@@ -1621,6 +1659,7 @@
             checkStreak();
             checkNotificationPermission();
             startNotificationPoller();
+            syncNotificationsToSW();
             startDailyCheckSystem();
             renderAll();
         }
@@ -1798,6 +1837,7 @@
             
             closeTaskModal();
             saveGameState();
+            syncNotificationsToSW();
             renderTasks();
         }
 
@@ -1861,6 +1901,7 @@
             
             closeEditTaskModal();
             saveGameState();
+            syncNotificationsToSW();
             renderTasks();
         }
 
@@ -2583,15 +2624,21 @@
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
                 gameState.notificationsEnabled = true;
+                gameState.notificationsExplicitlyDisabled = false;
                 await saveGameState();
                 updateNotificationStatus();
+                syncNotificationsToSW();
                 alert('Notifications enabled! You\'ll be reminded when tasks are scheduled.');
             }
         }
 
         function checkNotificationPermission() {
+            // Only auto-enable if permission is granted AND the user hasn't explicitly
+            // disabled it (notificationsExplicitlyDisabled flag tracks this).
             if ('Notification' in window && Notification.permission === 'granted') {
-                gameState.notificationsEnabled = true;
+                if (!gameState.notificationsExplicitlyDisabled) {
+                    gameState.notificationsEnabled = true;
+                }
             }
             updateNotificationStatus();
         }
@@ -2620,9 +2667,11 @@
 
         async function disableNotifications() {
             gameState.notificationsEnabled = false;
+            gameState.notificationsExplicitlyDisabled = true;
             gameState.notifiedToday = {};
             await saveGameState();
             updateNotificationStatus();
+            syncNotificationsToSW();
         }
 
         // Polling-based notification check — runs every 30 seconds.
@@ -2663,6 +2712,7 @@
                     });
                     gameState.notifiedToday[task.id] = todayKey;
                     saveGameState();
+                    syncNotificationsToSW();
                 }
             });
         }
