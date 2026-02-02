@@ -664,6 +664,7 @@
             border-radius: 20px 20px 0 0;
             box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
             transition: background 0.3s ease;
+            z-index: 100;
         }
 
         .nav-item {
@@ -1452,6 +1453,16 @@
         </div>
     </div>
 
+    <!-- Clear All Data Confirmation Modal -->
+    <div class="modal" id="clearDataConfirmModal">
+        <h3>⚠️ Clear All Data?</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">This will delete ALL your data including tasks, progress, and achievements. This cannot be undone. Are you sure?</p>
+        <div class="modal-buttons">
+            <button class="btn-secondary" onclick="closeClearDataConfirm()">Cancel</button>
+            <button class="btn-primary" style="background: #ff6b6b;" onclick="confirmClearData()">Clear All Data</button>
+        </div>
+    </div>
+
     <!-- Icon picker popup sheet -->
     <div class="icon-popup-overlay" id="iconPopupOverlay" onclick="closeIconPopup()"></div>
     <div class="icon-popup" id="iconPopup">
@@ -1838,7 +1849,7 @@
             closeTaskModal();
             saveGameState();
             syncNotificationsToSW();
-            renderTasks();
+            renderAll();
         }
 
         function openEditTaskModal(taskId) {
@@ -1855,7 +1866,10 @@
             document.getElementById('editTime').value = task.time || '';
             // set icon trigger
             const editTrigger = document.getElementById('editIconTrigger');
-            if (task.icon && ICON_LIBRARY[task.icon]) {
+            if (task.icon && task.icon.startsWith('custom:')) {
+                editTrigger.textContent = task.icon.slice(7);
+                editTrigger.dataset.iconId = task.icon;
+            } else if (task.icon && ICON_LIBRARY[task.icon]) {
                 editTrigger.textContent = ICON_LIBRARY[task.icon].emoji;
                 editTrigger.dataset.iconId = task.icon;
             } else {
@@ -1902,7 +1916,7 @@
             closeEditTaskModal();
             saveGameState();
             syncNotificationsToSW();
-            renderTasks();
+            renderAll();
         }
 
         function deleteTaskFromModal() {
@@ -2043,9 +2057,11 @@
             document.getElementById('currentStreak').textContent = gameState.currentStreak;
             document.getElementById('bestStreak').textContent = gameState.bestStreak;
             
-            // Update Done Today with x/y format
-            const totalToday = gameState.tasks.filter(t => isTaskActiveToday(t)).length;
-            document.getElementById('completedToday').textContent = `${gameState.completedToday}/${totalToday}`;
+            // Update Done Today with x/y format - calculate fresh each time
+            const activeTasks = gameState.tasks.filter(t => isTaskActiveToday(t));
+            const completedCount = activeTasks.filter(t => t.completed).length;
+            const totalToday = activeTasks.length;
+            document.getElementById('completedToday').textContent = `${completedCount}/${totalToday}`;
         }
 
         // ── Icon library ─────────────────────────────────────────────
@@ -2074,10 +2090,16 @@
             phone:     { label: 'Phone',     emoji: '📱' },
             cook:      { label: 'Cook',      emoji: '🍳' },
             clean:     { label: 'Clean',     emoji: '✨' },
+            journal2:  { label: 'Journal',   emoji: '📓' },
+            burger:    { label: 'Burger',    emoji: '🍔' },
+            shake:     { label: 'Protein',   emoji: '🥤' },
         };
 
         function getPillIcon(task) {
-            if (task.icon && ICON_LIBRARY[task.icon]) return ICON_LIBRARY[task.icon].emoji;
+            if (task.icon) {
+                if (task.icon.startsWith('custom:')) return task.icon.slice(7);
+                if (ICON_LIBRARY[task.icon]) return ICON_LIBRARY[task.icon].emoji;
+            }
             return task.recurring ? '🔄' : '⭐';
         }
 
@@ -2087,13 +2109,11 @@
 
         function openIconPopup(source) {
             iconPopupSource = source;
-            // read current selection from the trigger button's data
             const trigger = document.getElementById(source + 'IconTrigger');
             iconPopupSelected = trigger.dataset.iconId || null;
 
-            // build grid
             const grid = document.getElementById('iconPopupGrid');
-            let html = `<button class="icon-popup-btn clear-btn ${iconPopupSelected === null ? 'selected' : ''}"
+            let html = `<button class="icon-popup-btn clear-btn ${iconPopupSelected === null || iconPopupSelected === '' ? 'selected' : ''}"
                             data-icon-id=""
                             onclick="iconPopupPick('')"
                             title="No icon">✕</button>`;
@@ -2103,6 +2123,21 @@
                          onclick="iconPopupPick('${id}')"
                          title="${label}">${emoji}</button>`
             ).join('');
+
+            // Custom emoji row
+            const currentCustom = (iconPopupSelected && iconPopupSelected.startsWith('custom:'))
+                ? iconPopupSelected.slice(7) : '';
+            html += `<div style="grid-column: 1 / -1; margin-top: 8px; display: flex; gap: 8px; align-items: center;">
+                <input type="text" id="customEmojiInput" placeholder="Paste an emoji"
+                    value="${currentCustom}"
+                    style="flex:1; padding: 10px 12px; border-radius: 10px; border: 2px solid var(--border-color);
+                           background: var(--input-bg); color: var(--text-primary); font-size: 20px; text-align:center;
+                           outline:none;" />
+                <button onclick="iconPopupPickCustom()"
+                    style="padding: 10px 14px; border-radius: 10px; border: none; background: #667eea; color: #fff;
+                           font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap;">Use</button>
+            </div>`;
+
             grid.innerHTML = html;
 
             document.getElementById('iconPopupOverlay').classList.add('show');
@@ -2112,13 +2147,11 @@
         function iconPopupPick(id) {
             iconPopupSelected = id || null;
 
-            // update highlight
             document.querySelectorAll('.icon-popup-btn').forEach(btn => {
                 btn.classList.toggle('selected',
                     id === '' ? btn.dataset.iconId === '' : btn.dataset.iconId === id);
             });
 
-            // update the trigger button
             const trigger = document.getElementById(iconPopupSource + 'IconTrigger');
             if (id && ICON_LIBRARY[id]) {
                 trigger.textContent = ICON_LIBRARY[id].emoji;
@@ -2127,6 +2160,23 @@
                 trigger.textContent = '⭐';
                 trigger.dataset.iconId = '';
             }
+
+            closeIconPopup();
+        }
+
+        function iconPopupPickCustom() {
+            const input = document.getElementById('customEmojiInput');
+            const val = input.value.trim();
+            if (!val) return;
+
+            // Take only the first grapheme (emoji) if they pasted multiple characters
+            const emoji = [...val][0];
+            const id = 'custom:' + emoji;
+            iconPopupSelected = id;
+
+            const trigger = document.getElementById(iconPopupSource + 'IconTrigger');
+            trigger.textContent = emoji;
+            trigger.dataset.iconId = id;
 
             closeIconPopup();
         }
@@ -2518,6 +2568,9 @@
                     processMissedTasks();
                     checkStreak();
                     renderAll();
+                } else {
+                    // Re-render tasks every minute so time labels update color
+                    renderTasks();
                 }
             }, 60000); // Check every minute
         }
@@ -2763,9 +2816,41 @@
         }
 
         function clearAllData() {
-            if (confirm('⚠️ This will delete ALL your data including tasks, progress, and achievements. This cannot be undone. Are you sure?')) {
-                localStorage.removeItem('scheduleBuddyGameState');
-                location.reload();
+            document.getElementById('clearDataConfirmModal').classList.add('show');
+            document.getElementById('overlay').classList.add('show');
+        }
+
+        function closeClearDataConfirm() {
+            document.getElementById('clearDataConfirmModal').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        function confirmClearData() {
+            console.log('Clearing all data...');
+            
+            // Clear localStorage
+            localStorage.clear();
+            console.log('localStorage cleared');
+            
+            // Clear all caches
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => caches.delete(name));
+                });
+            }
+            
+            // Unregister service workers and reload
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    console.log('Found', registrations.length, 'service workers');
+                    Promise.all(registrations.map(r => r.unregister())).then(() => {
+                        console.log('All service workers unregistered, reloading...');
+                        window.location.reload(true);
+                    });
+                });
+            } else {
+                console.log('No service worker support, reloading...');
+                window.location.reload(true);
             }
         }
 
