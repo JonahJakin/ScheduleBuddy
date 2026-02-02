@@ -2493,7 +2493,11 @@
             const dayData = gameState.dailyHistory[dateKey];
             if (!dayData || dayData.rating === 'none') return;
             
-            const date = new Date(dateKey);
+            // Parse dateKey manually to avoid timezone issues
+            // dateKey format: "YYYY-MM-DD"
+            const [year, month, day] = dateKey.split('-').map(Number);
+            const date = new Date(year, month - 1, day); // month is 0-indexed
+            
             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'];
             const dateStr = `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
