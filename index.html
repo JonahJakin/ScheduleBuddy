@@ -1268,7 +1268,10 @@
             <div class="section">
                 <div class="section-title">
                     Calendar
-                    <button class="add-button" onclick="shareMonthlyProgress()" style="background: #51cf66;">📤 Share</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="add-button" onclick="showColorLegend()" style="background: #667eea; font-size: 13px; padding: 8px 12px;">Colors</button>
+                        <button class="add-button" onclick="shareMonthlyProgress()" style="background: #51cf66;">📤 Share</button>
+                    </div>
                 </div>
                 <div class="calendar-container">
                     <div class="calendar-header">
@@ -1481,6 +1484,32 @@
         <h3 id="achievementPopupName"></h3>
         <p id="achievementPopupDescription"></p>
         <button onclick="closeAchievementPopup()">Close</button>
+    </div>
+
+    <div class="modal" id="colorLegendModal">
+        <h3>Calendar Color Guide</h3>
+        <div style="text-align: left; margin: 20px 0; line-height: 1.8; color: var(--text-primary);">
+            <div style="margin-bottom: 12px;">
+                <span style="display: inline-block; width: 20px; height: 20px; background: #51cf66; border-radius: 4px; vertical-align: middle; margin-right: 8px;"></span>
+                <strong>Green Day</strong> — Completed all tasks (100%)
+            </div>
+            <div style="margin-bottom: 12px;">
+                <span style="display: inline-block; width: 20px; height: 20px; background: #ffd43b; border-radius: 4px; vertical-align: middle; margin-right: 8px;"></span>
+                <strong>Yellow Day</strong> — Completed 75-99% of tasks
+            </div>
+            <div style="margin-bottom: 12px;">
+                <span style="display: inline-block; width: 20px; height: 20px; background: #ff922b; border-radius: 4px; vertical-align: middle; margin-right: 8px;"></span>
+                <strong>Orange Day</strong> — Completed 50-74% of tasks
+            </div>
+            <div style="margin-bottom: 12px;">
+                <span style="display: inline-block; width: 20px; height: 20px; background: #ff6b6b; border-radius: 4px; vertical-align: middle; margin-right: 8px;"></span>
+                <strong>Red Day</strong> — Completed less than 50% of tasks
+            </div>
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); color: var(--text-secondary); font-size: 14px;">
+                💡 <strong>Streak tip:</strong> Green/yellow days count toward your streak. Orange/red days break it!
+            </div>
+        </div>
+        <button onclick="closeColorLegend()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 500; font-size: 15px;">Got it!</button>
     </div>
 
     <script>
@@ -2047,7 +2076,7 @@
             
             document.getElementById('levelBadge').textContent = gameState.level;
             document.getElementById('levelTitle').textContent = getLevelTitle(gameState.level);
-            document.getElementById('xpProgress').textContent = `${gameState.xp} / ${nextThreshold} XP`;
+            document.getElementById('xpProgress').textContent = `${gameState.xp - currentThreshold} / ${nextThreshold - currentThreshold} XP`;
             document.getElementById('progressFill').style.width = `${Math.min(progress, 100)}%`;
             
             // Calculate total green days
@@ -2433,6 +2462,16 @@
 
         function closeAchievementPopup() {
             document.getElementById('achievementPopup').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        function showColorLegend() {
+            document.getElementById('colorLegendModal').classList.add('show');
+            document.getElementById('overlay').classList.add('show');
+        }
+
+        function closeColorLegend() {
+            document.getElementById('colorLegendModal').classList.remove('show');
             document.getElementById('overlay').classList.remove('show');
         }
 
