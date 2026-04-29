@@ -1513,43 +1513,8 @@
     </div>
 
     <script>
-        // Register Service Worker for background notifications
-        let swRegistration = null;
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(reg => {
-                swRegistration = reg;
-            }).catch(() => {});
-        }
-
-        // Sends current notification state to the Service Worker
-        function syncNotificationsToSW() {
-            if (!swRegistration || !swRegistration.active) return;
-
-            if (!gameState.notificationsEnabled) {
-                swRegistration.active.postMessage({ type: 'DISABLE' });
-                return;
-            }
-
-            const now = new Date();
-            const todayKey = now.getFullYear() + '-' +
-                String(now.getMonth() + 1).padStart(2, '0') + '-' +
-                String(now.getDate()).padStart(2, '0');
-
-            const taskList = gameState.tasks
-                .filter(t => t.notification && t.time)
-                .map(t => ({
-                    id: t.id,
-                    name: t.name,
-                    time: t.time,
-                    notifiedToday: (gameState.notifiedToday || {})[t.id] === todayKey
-                }));
-
-            swRegistration.active.postMessage({
-                type: 'UPDATE_TASKS',
-                tasks: taskList,
-                enabled: true
-            });
-        }
+        // Notifications are handled in-page via polling. Older service worker
+        // integration was removed after the backing file stopped shipping.
 
         // Game State
         let gameState = {
@@ -1573,6 +1538,10 @@
         };
 
         let currentEditingTaskId = null;
+        const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'];
+        const DAY_HEADERS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
         // Achievements Definition
         const achievementDefs = [
@@ -1699,7 +1668,6 @@
             checkStreak();
             checkNotificationPermission();
             startNotificationPoller();
-            syncNotificationsToSW();
             startDailyCheckSystem();
             renderAll();
         }
@@ -1727,7 +1695,6 @@
         // Check and update streak
         function checkStreak() {
             const today = new Date().toDateString();
-            const todayKey = formatDateKey(new Date());
             const yesterday = new Date(Date.now() - 86400000);
             const yesterdayKey = formatDateKey(yesterday);
             
@@ -1770,24 +1737,88 @@
             return `${year}-${month}-${day}`;
         }
 
-        function saveDayRating(dateKey) {
-            const recurringTasks = gameState.tasks.filter(t => t.recurring && isTaskActiveToday(t));
+        function parseDateKey(dateKey) {
+            const [year, month, day] = dateKey.split('-').map(Number);
+            return new Date(year, month - 1, day);
+        }
+
+        function isTaskActiveOnDate(task, date) {
+            if (!task.recurring) return true;
+            if (!task.days || task.days.length === 0) return true;
+            return task.days.includes(date.getDay());
+        }
+
+        function isTaskActiveToday(task) {
+            return isTaskActiveOnDate(task, new Date());
+        }
+
+        function getActiveTasksForDate(date = new Date()) {
+            return gameState.tasks.filter(task => isTaskActiveOnDate(task, date));
+        }
+
+        function getRecurringTasksForDate(date = new Date()) {
+            return gameState.tasks.filter(task => task.recurring && isTaskActiveOnDate(task, date));
+        }
+
+        function getCompletionSummaryForDate(date = new Date()) {
+            const activeTasks = getActiveTasksForDate(date);
+            const completedCount = activeTasks.filter(task => task.completed).length;
+            return {
+                activeTasks,
+                completedCount,
+                totalCount: activeTasks.length
+            };
+        }
+
+        function getDayRating(completedTasks, totalTasks) {
+            if (totalTasks === 0) return 'none';
+            const percentage = completedTasks / totalTasks;
+            if (percentage === 1) return 'green';
+            if (percentage >= 0.75) return 'yellow';
+            if (percentage >= 0.5) return 'orange';
+            return 'red';
+        }
+
+        function getRatingEmoji(rating) {
+            if (rating === 'green') return '🟩';
+            if (rating === 'yellow') return '🟨';
+            if (rating === 'orange') return '🟧';
+            if (rating === 'red') return '🟥';
+            return '⬜';
+        }
+
+        function getDayStatusEmoji(date, options = {}) {
+            const {
+                includeFutureAsBlank = true,
+                useLiveTodayState = true
+            } = options;
+            const today = new Date();
+            const targetKey = formatDateKey(date);
+            const todayKey = formatDateKey(today);
+
+            if (includeFutureAsBlank && date > today && targetKey !== todayKey) {
+                return '⬜';
+            }
+
+            if (useLiveTodayState && targetKey === todayKey) {
+                return getRatingEmoji(getDayRating(gameState.completedToday, getRecurringTasksForDate(today).length));
+            }
+
+            const dayData = gameState.dailyHistory[targetKey];
+            if (!dayData || dayData.rating === 'none') return '⬜';
+            return getRatingEmoji(dayData.rating);
+        }
+
+        function saveDayRating(dateKey, completedTasks = gameState.completedToday) {
+            const recurringTasks = getRecurringTasksForDate(parseDateKey(dateKey));
             const totalTasks = recurringTasks.length;
             
             if (totalTasks === 0) {
                 gameState.dailyHistory[dateKey] = { completed: 0, total: 0, rating: 'none' };
                 return;
             }
-            
-            const completedTasks = gameState.completedToday;
-            const percentage = completedTasks / totalTasks;
-            
-            let rating;
-            if (percentage === 1) rating = 'green';
-            else if (percentage >= 0.75) rating = 'yellow';
-            else if (percentage >= 0.5) rating = 'orange';
-            else rating = 'red';
-            
+
+            const rating = getDayRating(completedTasks, totalTasks);
             gameState.dailyHistory[dateKey] = { completed: completedTasks, total: totalTasks, rating };
         }
 
@@ -1832,12 +1863,6 @@
             setDayPills(prefix, [0, 1, 2, 3, 4, 5, 6]);
         }
 
-        function isTaskActiveToday(task) {
-            if (!task.recurring) return true;
-            if (!task.days || task.days.length === 0) return true;
-            return task.days.includes(new Date().getDay());
-        }
-
         function closeTaskModal() {
             document.getElementById('taskModal').classList.remove('show');
             document.getElementById('overlay').classList.remove('show');
@@ -1877,7 +1902,6 @@
             
             closeTaskModal();
             saveGameState();
-            syncNotificationsToSW();
             renderAll();
         }
 
@@ -1944,7 +1968,6 @@
             
             closeEditTaskModal();
             saveGameState();
-            syncNotificationsToSW();
             renderAll();
         }
 
@@ -2003,19 +2026,21 @@
                 
                 saveGameState();
                 renderHeader();
+                renderCalendar();
                 renderTasks();
             }
         }
 
         function deleteTask(taskId) {
             gameState.tasks = gameState.tasks.filter(t => t.id !== taskId);
+            const todayKey = formatDateKey(new Date());
+            saveDayRating(todayKey);
             saveGameState();
             renderAll();
         }
 
         // XP and Leveling
         function addXP(points) {
-            const oldLevel = gameState.level;
             gameState.xp += points;
             gameState.totalPoints += points;
             
@@ -2087,9 +2112,8 @@
             document.getElementById('bestStreak').textContent = gameState.bestStreak;
             
             // Update Done Today with x/y format - calculate fresh each time
-            const activeTasks = gameState.tasks.filter(t => isTaskActiveToday(t));
-            const completedCount = activeTasks.filter(t => t.completed).length;
-            const totalToday = activeTasks.length;
+            const { completedCount, totalCount } = getCompletionSummaryForDate();
+            const totalToday = totalCount;
             document.getElementById('completedToday').textContent = `${completedCount}/${totalToday}`;
         }
 
@@ -2237,7 +2261,7 @@
             const dayOfWeekEl = document.getElementById('dayOfWeek');
             
             const today = new Date();
-            dayOfWeekEl.textContent = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][today.getDay()];
+            dayOfWeekEl.textContent = DAY_NAMES[today.getDay()];
             
             if (gameState.tasks.length === 0) {
                 noTimeContainer.innerHTML = '';
@@ -2476,13 +2500,10 @@
         }
 
         function renderCalendar() {
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                'July', 'August', 'September', 'October', 'November', 'December'];
-            
             const month = gameState.currentCalendarMonth;
             const year = gameState.currentCalendarYear;
             
-            document.getElementById('calendarMonth').textContent = `${monthNames[month]} ${year}`;
+            document.getElementById('calendarMonth').textContent = `${MONTH_NAMES[month]} ${year}`;
             
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -2492,8 +2513,7 @@
             let calendarHTML = '';
             
             // Add day headers
-            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            dayHeaders.forEach(day => {
+            DAY_HEADERS.forEach(day => {
                 calendarHTML += `<div class="calendar-day-header">${day}</div>`;
             });
             
@@ -2534,12 +2554,8 @@
             
             // Parse dateKey manually to avoid timezone issues
             // dateKey format: "YYYY-MM-DD"
-            const [year, month, day] = dateKey.split('-').map(Number);
-            const date = new Date(year, month - 1, day); // month is 0-indexed
-            
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                'July', 'August', 'September', 'October', 'November', 'December'];
-            const dateStr = `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+            const date = parseDateKey(dateKey);
+            const dateStr = `${MONTH_NAMES[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
             
             document.getElementById('dayPopupDate').textContent = dateStr;
             document.getElementById('dayPopupStats').textContent = 
@@ -2575,7 +2591,10 @@
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             
             document.getElementById(`${tab}Tab`).classList.add('active');
-            event.currentTarget.classList.add('active');
+            const nav = Array.from(document.querySelectorAll('.bottom-nav .nav-item')).find(item =>
+                item.getAttribute('onclick') === `switchTab('${tab}')`
+            );
+            if (nav) nav.classList.add('active');
             
             if (tab === 'calendar') {
                 renderCalendar();
@@ -2619,7 +2638,9 @@
         }
 
         function processMissedTasks() {
-            const recurringTasks = gameState.tasks.filter(t => t.recurring && isTaskActiveToday(t));
+            const previousDay = new Date();
+            previousDay.setDate(previousDay.getDate() - 1);
+            const recurringTasks = getRecurringTasksForDate(previousDay);
             const missedTasks = recurringTasks.filter(t => !t.completed);
             
             // Subtract XP for each missed recurring task (half of what it would give)
@@ -2723,7 +2744,6 @@
                 gameState.notificationsExplicitlyDisabled = false;
                 await saveGameState();
                 updateNotificationStatus();
-                syncNotificationsToSW();
                 alert('Notifications enabled! You\'ll be reminded when tasks are scheduled.');
             }
         }
@@ -2767,7 +2787,6 @@
             gameState.notifiedToday = {};
             await saveGameState();
             updateNotificationStatus();
-            syncNotificationsToSW();
         }
 
         // Polling-based notification check — runs every 30 seconds.
@@ -2791,6 +2810,7 @@
 
             gameState.tasks.forEach(task => {
                 if (!task.notification || !task.time) return;
+                if (!isTaskActiveOnDate(task, now)) return;
                 // Already fired for this task today?
                 if (gameState.notifiedToday[task.id] === todayKey) return;
 
@@ -2808,14 +2828,8 @@
                     });
                     gameState.notifiedToday[task.id] = todayKey;
                     saveGameState();
-                    syncNotificationsToSW();
                 }
             });
-        }
-
-        // Called on init — no-op now since the poller handles everything
-        function scheduleAllNotifications() {
-            // Poller-based system needs no upfront scheduling
         }
 
         // Backup and Restore Functions
@@ -2928,34 +2942,7 @@
             for (let i = 6; i >= 0; i--) {
                 const date = new Date(today);
                 date.setDate(date.getDate() - i);
-                const dateKey = formatDateKey(date);
-                const dayData = gameState.dailyHistory[dateKey];
-                
-                let emoji;
-                if (dateKey === formatDateKey(today)) {
-                    // Today - use current status
-                    const recurringTasks = gameState.tasks.filter(t => t.recurring);
-                    const totalTasks = recurringTasks.length;
-                    if (totalTasks === 0) {
-                        emoji = '⬜';
-                    } else {
-                        const percentage = gameState.completedToday / totalTasks;
-                        if (percentage === 1) emoji = '🟩';
-                        else if (percentage >= 0.75) emoji = '🟨';
-                        else if (percentage >= 0.5) emoji = '🟧';
-                        else emoji = '🟥';
-                    }
-                } else if (!dayData || dayData.rating === 'none') {
-                    emoji = '⬜';
-                } else {
-                    if (dayData.rating === 'green') emoji = '🟩';
-                    else if (dayData.rating === 'yellow') emoji = '🟨';
-                    else if (dayData.rating === 'orange') emoji = '🟧';
-                    else if (dayData.rating === 'red') emoji = '🟥';
-                    else emoji = '⬜';
-                }
-                
-                last7Days.push(emoji);
+                last7Days.push(getDayStatusEmoji(date, { includeFutureAsBlank: false }));
             }
             
             // Calculate total days tracked (for "Day X")
@@ -2983,12 +2970,9 @@ Best Streak: ${gameState.bestStreak} Days`;
 
         // Share Monthly Progress
         function shareMonthlyProgress() {
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                'July', 'August', 'September', 'October', 'November', 'December'];
-            
             const month = gameState.currentCalendarMonth;
             const year = gameState.currentCalendarYear;
-            const monthName = monthNames[month];
+            const monthName = MONTH_NAMES[month];
             
             // Get first day of month and total days
             const firstDay = new Date(year, month, 1).getDay();
@@ -3008,39 +2992,7 @@ Best Streak: ${gameState.bestStreak} Days`;
             // Add days of the month
             for (let day = 1; day <= daysInMonth; day++) {
                 const date = new Date(year, month, day);
-                const dateKey = formatDateKey(date);
-                const dayData = gameState.dailyHistory[dateKey];
-                
-                let emoji;
-                if (dateKey === todayKey) {
-                    // Today - use current status
-                    const recurringTasks = gameState.tasks.filter(t => t.recurring);
-                    const totalTasks = recurringTasks.length;
-                    if (totalTasks === 0) {
-                        emoji = '⬜';
-                    } else {
-                        const percentage = gameState.completedToday / totalTasks;
-                        if (percentage === 1) emoji = '🟩';
-                        else if (percentage >= 0.75) emoji = '🟨';
-                        else if (percentage >= 0.5) emoji = '🟧';
-                        else emoji = '🟥';
-                    }
-                } else if (date > today) {
-                    // Future days
-                    emoji = '⬜';
-                } else if (!dayData || dayData.rating === 'none') {
-                    // Past days with no tasks
-                    emoji = '⬜';
-                } else {
-                    // Past days with ratings
-                    if (dayData.rating === 'green') emoji = '🟩';
-                    else if (dayData.rating === 'yellow') emoji = '🟨';
-                    else if (dayData.rating === 'orange') emoji = '🟧';
-                    else if (dayData.rating === 'red') emoji = '🟥';
-                    else emoji = '⬜';
-                }
-                
-                currentLine += emoji;
+                currentLine += getDayStatusEmoji(date);
                 
                 // Start new line after Sunday (day 0) or if we hit 7 days
                 if ((firstDay + day) % 7 === 0) {
@@ -3065,8 +3017,7 @@ Best Streak: ${gameState.bestStreak} Days`;
                 
                 if (dateKey === todayKey) {
                     // Check if today is perfect
-                    const recurringTasks = gameState.tasks.filter(t => t.recurring);
-                    const totalTasks = recurringTasks.length;
+                    const totalTasks = getRecurringTasksForDate(today).length;
                     if (totalTasks > 0 && gameState.completedToday === totalTasks) {
                         perfectDaysThisMonth++;
                     }
@@ -3078,8 +3029,7 @@ Best Streak: ${gameState.bestStreak} Days`;
             // Calculate total perfect days
             const totalPerfectDays = Object.values(gameState.dailyHistory).filter(day => day.rating === 'green').length;
             // Add today if it's perfect
-            const recurringTasks = gameState.tasks.filter(t => t.recurring);
-            const totalTasks = recurringTasks.length;
+            const totalTasks = getRecurringTasksForDate(today).length;
             const todayIsPerfect = totalTasks > 0 && gameState.completedToday === totalTasks;
             const adjustedTotal = todayIsPerfect ? totalPerfectDays + 1 : totalPerfectDays;
             
