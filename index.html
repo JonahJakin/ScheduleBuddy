@@ -45,6 +45,9 @@
             --day-red: #ff6b6b;
             --onboarding-accent: #234c63;
             --onboarding-sand: rgba(255,255,255,0.78);
+            --accent-primary: #667eea;
+            --accent-secondary: #51cf66;
+            --accent-danger: #ff6b6b;
         }
 
         body.dark-mode {
@@ -61,6 +64,34 @@
         body.dark-mode .task-recurring {
             background: #1e2a3a;
             color: #6ea8c7;
+        }
+
+        body.professional-mode {
+            --bg-gradient-start: #f1eee8;
+            --bg-gradient-end: #e2dfd8;
+            --card-bg: #fbfaf8;
+            --text-primary: #30363a;
+            --text-secondary: #5e686e;
+            --text-tertiary: #7c868c;
+            --border-color: #d9d5cf;
+            --input-bg: #f3f0eb;
+            --completed-bg: #ecefea;
+            --day-dark-green: #4f6658;
+            --day-green: #72897a;
+            --day-yellow: #b4aa79;
+            --day-orange: #a98b72;
+            --day-red: #8d6b6b;
+            --onboarding-accent: #425b66;
+            --onboarding-sand: rgba(250,248,244,0.88);
+            --accent-primary: #5f7480;
+            --accent-secondary: #72897a;
+            --accent-danger: #8d6b6b;
+            font-family: "Avenir Next", "Segoe UI", sans-serif;
+        }
+
+        body.professional-mode .task-recurring {
+            background: rgba(95, 116, 128, 0.1);
+            color: #4b616c;
         }
 
         body {
@@ -1453,6 +1484,8 @@
         .onboarding-content {
             padding: 22px 22px 10px;
             flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .onboarding-kicker {
@@ -1479,6 +1512,7 @@
             font-size: 16px;
             line-height: 1.6;
             color: #425562;
+            min-height: 128px;
         }
 
         .onboarding-panel {
@@ -1487,6 +1521,7 @@
             border: 1px solid rgba(35, 76, 99, 0.08);
             border-radius: 22px;
             padding: 18px;
+            flex: 1;
         }
 
         .onboarding-list {
@@ -1555,6 +1590,136 @@
             color: white;
             box-shadow: 0 10px 22px rgba(35, 76, 99, 0.18);
         }
+
+        body.professional-mode .level-badge,
+        body.professional-mode .progress-fill {
+            background: linear-gradient(135deg, var(--accent-primary), #6c8087);
+        }
+
+        body.professional-mode .points-value,
+        body.professional-mode .streak-number,
+        body.professional-mode .task-points,
+        body.professional-mode .grid-card-xp,
+        body.professional-mode .nav-item.active,
+        body.professional-mode .settings-button {
+            color: var(--accent-primary);
+        }
+
+        body.professional-mode #totalGreenDays {
+            color: var(--day-dark-green) !important;
+        }
+
+        body.professional-mode .add-button,
+        body.professional-mode .calendar-nav,
+        body.professional-mode .celebration button,
+        body.professional-mode .btn-primary,
+        body.professional-mode .achievement-popup button,
+        body.professional-mode .day-popup button {
+            background: var(--accent-primary);
+        }
+
+        body.professional-mode #shareStreakBtn,
+        body.professional-mode #shareMonthBtn,
+        body.professional-mode .backup-export,
+        body.professional-mode .backup-import {
+            background: var(--accent-secondary) !important;
+        }
+
+        body.professional-mode #clearDataBtn,
+        body.professional-mode .btn-primary[style*="#ff6b6b"] {
+            background: var(--accent-danger) !important;
+        }
+
+        body.professional-mode .add-button:hover {
+            background: #50636d;
+        }
+
+        body.professional-mode .timeline-circle,
+        body.professional-mode .grid-card-circle,
+        body.professional-mode .calendar-day.today,
+        body.professional-mode .icon-trigger:active,
+        body.professional-mode .form-group input[type="time"]:focus,
+        body.professional-mode .input-group input:focus,
+        body.professional-mode input:checked + .slider,
+        body.professional-mode .view-sel-btn.active {
+            border-color: var(--accent-primary);
+        }
+
+        body.professional-mode .timeline-circle.completed,
+        body.professional-mode .grid-card-circle.completed {
+            background: var(--accent-primary);
+        }
+
+        body.professional-mode .task-checkbox,
+        body.professional-mode .checkbox-group input[type="checkbox"] {
+            accent-color: var(--accent-primary);
+        }
+
+        body.professional-mode .view-sel-btn.active,
+        body.professional-mode .icon-popup-btn.selected {
+            background: rgba(95, 116, 128, 0.12);
+            color: var(--accent-primary);
+        }
+
+        body.professional-mode .icon-popup-btn.selected {
+            border-color: var(--accent-primary);
+        }
+
+        body.professional-mode .calendar-day.future {
+            background: rgba(110, 118, 125, 0.12);
+        }
+
+        body.professional-mode .calendar-day.no-tasks {
+            background: rgba(110, 118, 125, 0.2);
+        }
+
+        body.professional-mode .onboarding-btn.primary {
+            background: linear-gradient(135deg, var(--onboarding-accent), #66797f);
+        }
+
+        body.professional-mode .onboarding-title,
+        body.professional-mode .section-title,
+        body.professional-mode .level-details h2,
+        body.professional-mode .calendar-month {
+            color: #24353d;
+        }
+
+        body.professional-mode .onboarding-copy,
+        body.professional-mode .onboarding-item-copy,
+        body.professional-mode .level-details p,
+        body.professional-mode .points-label,
+        body.professional-mode .streak-label {
+            color: #5b686f;
+        }
+
+        body.professional-mode .header,
+        body.professional-mode .section,
+        body.professional-mode .modal,
+        body.professional-mode .celebration,
+        body.professional-mode .achievement-popup,
+        body.professional-mode .day-popup,
+        body.professional-mode .onboarding-shell,
+        body.professional-mode .color-legend-modal {
+            box-shadow: 0 18px 40px rgba(56, 67, 72, 0.08);
+        }
+
+        body.professional-mode .achievement.unlocked {
+            background: linear-gradient(135deg, #d8d6cf, #b8c1c5);
+            color: #2f3439;
+        }
+
+        body.professional-mode .achievement.unlocked .achievement-name {
+            color: #2f3439;
+        }
+
+        body.professional-mode #colorLegendBtn,
+        body.professional-mode #colorLegendCloseBtn {
+            background: var(--accent-primary) !important;
+        }
+
+        body.professional-mode #deleteTaskBtn {
+            background: var(--accent-danger) !important;
+        }
     </style>
 </head>
 <body>
@@ -1590,7 +1755,7 @@
                     <div class="streak-label">Best Streak</div>
                 </div>
             </div>
-            <button onclick="shareStreakProgress()" style="width: 100%; margin-top: 12px; padding: 10px; background: #51cf66; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; letter-spacing: -0.2px; transition: all 0.2s ease;">📤 Share Streak</button>
+            <button id="shareStreakBtn" onclick="shareStreakProgress()" style="width: 100%; margin-top: 12px; padding: 10px; background: #51cf66; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; letter-spacing: -0.2px; transition: all 0.2s ease;">📤 Share Streak</button>
         </div>
 
         <div id="scheduleTab" class="tab-content active">
@@ -1619,8 +1784,8 @@
                 <div class="section-title">
                     Calendar
                     <div style="display: flex; gap: 8px;">
-                        <button class="add-button" onclick="showColorLegend()" style="background: #667eea; font-size: 13px; padding: 8px 12px;">Colors</button>
-                        <button class="add-button" onclick="shareMonthlyProgress()" style="background: #51cf66;">📤 Share</button>
+                        <button class="add-button" id="colorLegendBtn" onclick="showColorLegend()" style="background: #667eea; font-size: 13px; padding: 8px 12px;">Colors</button>
+                        <button class="add-button" id="shareMonthBtn" onclick="shareMonthlyProgress()" style="background: #51cf66;">📤 Share</button>
                     </div>
                 </div>
                 <div class="calendar-container">
@@ -1644,6 +1809,19 @@
                     <label>Dark Mode</label>
                     <label class="switch">
                         <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div>
+                        <label>Professional Mode</label>
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px; max-width: 360px;">
+                            Replaces built-in emojis with symbols and shifts the app to a more muted, understated presentation.
+                        </p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="professionalModeToggle" onchange="toggleProfessionalMode()">
                         <span class="slider"></span>
                     </label>
                 </div>
@@ -1685,12 +1863,12 @@
 
                 <div class="backup-section">
                     <h4 style="margin-bottom: 15px; color: var(--text-primary);">Backup & Restore</h4>
-                    <button class="backup-export" onclick="exportData()">📥 Export My Data</button>
-                    <button class="backup-import" onclick="document.getElementById('importFile').click()">
+                    <button class="backup-export" id="exportDataBtn" onclick="exportData()">📥 Export My Data</button>
+                    <button class="backup-import" id="importDataBtn" onclick="document.getElementById('importFile').click()">
                         📤 Import Data
                     </button>
                     <input type="file" id="importFile" accept=".json" onchange="importData(event)" />
-                    <button onclick="clearAllData()" style="width: 100%; padding: 12px; margin-top: 10px; background: #ff6b6b; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 500;">🗑️ Clear All Data</button>
+                    <button id="clearDataBtn" onclick="clearAllData()" style="width: 100%; padding: 12px; margin-top: 10px; background: #ff6b6b; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 500;">🗑️ Clear All Data</button>
                     <p style="font-size: 12px; color: var(--text-secondary); margin-top: 10px;">
                         Export your data before updating the app to keep your progress!
                     </p>
@@ -1701,19 +1879,19 @@
 
     <div class="bottom-nav">
         <div class="nav-item active" onclick="switchTab('schedule')">
-            <div class="nav-icon">✓</div>
+            <div class="nav-icon" id="scheduleNavIcon">✓</div>
             <div>Schedule</div>
         </div>
         <div class="nav-item" onclick="switchTab('calendar')">
-            <div class="nav-icon">📅</div>
+            <div class="nav-icon" id="calendarNavIcon">📅</div>
             <div>Calendar</div>
         </div>
         <div class="nav-item" onclick="switchTab('achievements')">
-            <div class="nav-icon">🏆</div>
+            <div class="nav-icon" id="achievementsNavIcon">🏆</div>
             <div>Achievements</div>
         </div>
         <div class="nav-item" onclick="switchTab('settings')">
-            <div class="nav-icon">⚙️</div>
+            <div class="nav-icon" id="settingsNavIcon">⚙️</div>
             <div>Settings</div>
         </div>
     </div>
@@ -1810,7 +1988,7 @@
         </div>
         
         <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color);">
-            <button onclick="deleteTaskFromModal()" style="width: 100%; padding: 12px; background: #ff6b6b; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 500;">Delete Task</button>
+            <button id="deleteTaskBtn" onclick="deleteTaskFromModal()" style="width: 100%; padding: 12px; background: #ff6b6b; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 500;">Delete Task</button>
         </div>
     </div>
 
@@ -1825,7 +2003,7 @@
 
     <!-- Clear All Data Confirmation Modal -->
     <div class="modal" id="clearDataConfirmModal">
-        <h3>⚠️ Clear All Data?</h3>
+        <h3 id="clearDataTitle">⚠️ Clear All Data?</h3>
         <p style="color: var(--text-secondary); margin-bottom: 20px;">This will delete ALL your data including tasks, progress, and achievements. This cannot be undone. Are you sure?</p>
         <div class="modal-buttons">
             <button class="btn-secondary" onclick="closeClearDataConfirm()">Cancel</button>
@@ -1857,7 +2035,7 @@
     <div class="modal" id="colorLegendModal">
         <h3>Calendar Color Guide</h3>
         <div id="colorLegendContent" style="text-align: left; margin: 20px 0; line-height: 1.8; color: var(--text-primary);"></div>
-        <button onclick="closeColorLegend()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 500; font-size: 15px;">Got it!</button>
+        <button id="colorLegendCloseBtn" onclick="closeColorLegend()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 500; font-size: 15px;">Got it!</button>
     </div>
 
     <div class="onboarding" id="onboarding">
@@ -1897,6 +2075,7 @@
             dailyTaskHistory: {}, // { 'YYYY-MM-DD': [{ id, name, completed, time, icon, recurring }] }
             easyMode: false,
             easyModeGraceUsed: false,
+            professionalMode: false,
             onboardingCompleted: false,
             darkMode: false,
             scheduleView: 'timeline',
@@ -1910,32 +2089,76 @@
         const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'];
         const DAY_HEADERS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const PROFESSIONAL_SYMBOLS = {
+            meal: '□',
+            water: '◌',
+            exercise: '▲',
+            walk: '→',
+            meditate: '◎',
+            study: '▤',
+            work: '▣',
+            journal: '✎',
+            shower: '◔',
+            chores: '⌂',
+            evening: '◐',
+            meds: '✚',
+            skincare: '◍',
+            clean: '✦',
+            shake: '◒',
+            achievement_first_steps: '◇',
+            achievement_level_10: '◈',
+            achievement_level_25: '△',
+            achievement_level_50: '⬢',
+            achievement_greener_grass: '◫',
+            achievement_locked_in: '▣',
+            achievement_super_streaker: '↟',
+            achievement_salvation: '◆',
+            nav_schedule: '□',
+            nav_calendar: '▦',
+            nav_achievements: '◆',
+            nav_settings: '⋯',
+            action_share: '↗',
+            action_export: '⇣',
+            action_import: '⇡',
+            action_clear: '×',
+            action_notify_on: '◔',
+            action_notify_off: '◕',
+            empty_none: '□',
+            empty_rest: '—',
+            celebrate_default: '◆',
+            celebrate_level: '▲',
+            celebrate_task: '●',
+            celebrate_copy: '↗',
+            alert_clear: '!',
+            progress_done: '✓',
+            progress_missed: '–'
+        };
         const ONBOARDING_SLIDES = [
             {
                 kicker: 'Welcome',
-                title: 'Build a day you can actually keep showing up for.',
-                copy: 'ScheduleBuddy turns a routine into something visible, encouraging, and easy to revisit. Add the tasks that matter, check them off through the day, and let the app reflect your momentum back to you.',
+                title: 'Build a day you can keep showing up for.',
+                copy: 'ScheduleBuddy helps turn a routine into a clear, manageable plan for the day. Add the tasks that matter, complete them as you go, and build a steady record of follow-through without adding unnecessary complexity.',
                 items: [
-                    ['1', 'Simple by default', 'You can start with just a few repeating tasks and grow from there.'],
-                    ['2', 'Designed for real days', 'Misses, partial wins, and streak recovery are all part of the system.']
+                    ['◫', 'Build your day', 'Create a routine with repeating tasks, optional times, and enough flexibility to adjust as your schedule changes.'],
+                    ['↗', 'Share your progress', 'Share streaks or monthly snapshots in a format that is easy to read and simple to send.']
                 ]
             },
             {
                 kicker: 'Your Calendar',
-                title: 'Your month fills up with color as you complete more of your routine.',
-                copy: 'Every day is graded by how many of your scheduled tasks you finished. Stronger completion gives you stronger colors, so one glance at your calendar can show where you were locked in, where you were close, and where you need a reset.',
+                title: 'Color the calendar with your progress.',
+                copy: 'Every day is color-graded by how many tasks you finished, giving you an immediate view of consistency across the month. Over time, the calendar becomes a clear visual record of momentum, recovery, and sustained follow-through.',
                 items: [
-                    ['CAL', 'Color-coded days', 'Finished more tasks? Your day lands in a better color range.'],
-                    ['LOOK', 'Easy to read back', 'The calendar becomes a visual record of your momentum over time.']
+                    ['◔', 'Color-coded days', 'The more of your routine you complete, the stronger your day appears on the calendar.'],
+                    ['▦', 'Easy to review', 'You can quickly spot patterns, strong stretches, and areas where you want more consistency.']
                 ]
             },
             {
                 kicker: 'Leveling Up',
-                title: 'The app tracks your work with a simple leveling system.',
-                copy: 'Each completed task gives you XP. As your XP rises, you level up and build a longer record of consistency. Harder days still count, and better streaks and fuller days help you stack progress faster over time.',
+                title: 'Track your work by leveling up.',
+                copy: 'Each completed task adds XP, while missed tasks can reduce your current progress toward the next level. Once a level is earned, however, it stays earned, even if you go through a period of missed tasks.',
                 items: [
-                    ['XP', 'Complete tasks', 'Checking off tasks earns XP every day.'],
-                    ['LVL', 'Keep building', 'More XP means higher levels, longer progress, and a clearer sense of growth.']
+                    ['▲', 'Progress moves with your work', 'Completing tasks moves the bar forward, while missed tasks can pull current progress back.'],
+                    ['◆', 'Levels remain secure', 'After you reach a new level, that milestone remains yours during harder stretches.']
                 ]
             }
         ];
@@ -2058,7 +2281,7 @@
             // Always open calendar to current month, not the saved month
             gameState.currentCalendarMonth = new Date().getMonth();
             gameState.currentCalendarYear = new Date().getFullYear();
-            applyDarkMode();
+            applyAppearance();
             // sync view selector to saved preference
             document.querySelectorAll('.view-sel-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.view === (gameState.scheduleView || 'timeline'));
@@ -2101,10 +2324,65 @@
             gameState.dailyTaskHistory = gameState.dailyTaskHistory || {};
             if (typeof gameState.easyMode !== 'boolean') gameState.easyMode = false;
             if (typeof gameState.easyModeGraceUsed !== 'boolean') gameState.easyModeGraceUsed = false;
+            if (typeof gameState.professionalMode !== 'boolean') gameState.professionalMode = false;
             if (typeof gameState.onboardingCompleted !== 'boolean') gameState.onboardingCompleted = false;
             if (typeof gameState.notificationsExplicitlyDisabled !== 'boolean') {
                 gameState.notificationsExplicitlyDisabled = false;
             }
+        }
+
+        function getUiSymbol(key, fallback = '') {
+            return gameState.professionalMode ? (PROFESSIONAL_SYMBOLS[key] || fallback) : fallback;
+        }
+
+        function getBuiltInTaskIcon(id) {
+            if (!ICON_LIBRARY[id]) return null;
+            return gameState.professionalMode ? (PROFESSIONAL_SYMBOLS[id] || ICON_LIBRARY[id].emoji) : ICON_LIBRARY[id].emoji;
+        }
+
+        function getTaskIconDisplay(task) {
+            if (task.icon) {
+                if (task.icon.startsWith('custom:')) return task.icon.slice(7);
+                return getBuiltInTaskIcon(task.icon) || '';
+            }
+            return task.recurring ? '↺' : '○';
+        }
+
+        function getAchievementIcon(def) {
+            if (!gameState.professionalMode) return def.icon;
+            return PROFESSIONAL_SYMBOLS[`achievement_${def.id}`] || '◆';
+        }
+
+        function getRatingShareSymbol(rating) {
+            if (!gameState.professionalMode) return getRatingEmoji(rating);
+            if (rating === 'darkgreen') return '■';
+            if (rating === 'green') return '●';
+            if (rating === 'yellow') return '◐';
+            if (rating === 'orange') return '◑';
+            if (rating === 'red') return '×';
+            return '·';
+        }
+
+        function refreshStaticLabels() {
+            const byId = (id) => document.getElementById(id);
+            if (byId('shareStreakBtn')) byId('shareStreakBtn').textContent = `${getUiSymbol('action_share', '📤')} Share Streak`;
+            if (byId('shareMonthBtn')) byId('shareMonthBtn').textContent = `${getUiSymbol('action_share', '📤')} Share`;
+            if (byId('exportDataBtn')) byId('exportDataBtn').textContent = `${getUiSymbol('action_export', '📥')} Export My Data`;
+            if (byId('importDataBtn')) byId('importDataBtn').textContent = `${getUiSymbol('action_import', '📤')} Import Data`;
+            if (byId('clearDataBtn')) byId('clearDataBtn').textContent = `${getUiSymbol('action_clear', '🗑️')} Clear All Data`;
+            if (byId('scheduleNavIcon')) byId('scheduleNavIcon').textContent = getUiSymbol('nav_schedule', '✓');
+            if (byId('calendarNavIcon')) byId('calendarNavIcon').textContent = getUiSymbol('nav_calendar', '📅');
+            if (byId('achievementsNavIcon')) byId('achievementsNavIcon').textContent = getUiSymbol('nav_achievements', '🏆');
+            if (byId('settingsNavIcon')) byId('settingsNavIcon').textContent = getUiSymbol('nav_settings', '⚙️');
+            if (byId('clearDataTitle')) byId('clearDataTitle').textContent = `${getUiSymbol('alert_clear', '⚠️')} Clear All Data?`;
+        }
+
+        function toggleProfessionalMode() {
+            gameState.professionalMode = !gameState.professionalMode;
+            applyAppearance();
+            renderColorLegend();
+            saveGameState();
+            renderAll();
         }
 
         // Check and update streak
@@ -2431,7 +2709,7 @@
                 editTrigger.textContent = task.icon.slice(7);
                 editTrigger.dataset.iconId = task.icon;
             } else if (task.icon && ICON_LIBRARY[task.icon]) {
-                editTrigger.textContent = ICON_LIBRARY[task.icon].emoji;
+                editTrigger.textContent = getBuiltInTaskIcon(task.icon);
                 editTrigger.dataset.iconId = task.icon;
             } else {
                 editTrigger.textContent = '✕';
@@ -2533,7 +2811,7 @@
                 gameState.totalCompleted++;
                 addXP(xp);
                 checkAchievements();
-                showCelebration('Task Complete! 🎯', `+${xp} XP`);
+                showCelebration(gameState.professionalMode ? 'Task Complete' : 'Task Complete! 🎯', `+${xp} XP`, getUiSymbol('celebrate_task', '🎯'));
             } else {
                 gameState.completedToday = Math.max(0, gameState.completedToday - 1);
                 gameState.totalCompleted = Math.max(0, gameState.totalCompleted - 1);
@@ -2593,7 +2871,7 @@
 
         function levelUp() {
             gameState.level++;
-            showCelebration('Level Up! 🎉', `You reached Level ${gameState.level}!`, '🌟');
+            showCelebration(gameState.professionalMode ? 'Level Up' : 'Level Up! 🎉', `You reached Level ${gameState.level}!`, getUiSymbol('celebrate_level', '🌟'));
             checkAchievements();
         }
 
@@ -2602,7 +2880,7 @@
             achievementDefs.forEach(def => {
                 if (!gameState.achievements.includes(def.id) && def.condition()) {
                     gameState.achievements.push(def.id);
-                    showCelebration('Achievement Unlocked! 🏆', def.name, def.icon);
+                    showCelebration(gameState.professionalMode ? 'Achievement Unlocked' : 'Achievement Unlocked! 🏆', def.name, getAchievementIcon(def));
                 }
             });
         }
@@ -2658,11 +2936,7 @@
         };
 
         function getPillIcon(task) {
-            if (task.icon) {
-                if (task.icon.startsWith('custom:')) return task.icon.slice(7);
-                if (ICON_LIBRARY[task.icon]) return ICON_LIBRARY[task.icon].emoji;
-            }
-            return task.recurring ? '↺' : '○';
+            return getTaskIconDisplay(task);
         }
 
         // ── Icon popup ───────────────────────────────────────────────
@@ -2683,7 +2957,7 @@
                 `<button class="icon-popup-btn ${iconPopupSelected === id ? 'selected' : ''}"
                          data-icon-id="${id}"
                          onclick="iconPopupPick('${id}')"
-                         title="${label}">${emoji}</button>`
+                         title="${label}">${getBuiltInTaskIcon(id) || emoji}</button>`
             ).join('');
 
             grid.innerHTML = html;
@@ -2702,7 +2976,7 @@
 
             const trigger = document.getElementById(iconPopupSource + 'IconTrigger');
             if (id && ICON_LIBRARY[id]) {
-                trigger.textContent = ICON_LIBRARY[id].emoji;
+                trigger.textContent = getBuiltInTaskIcon(id);
                 trigger.dataset.iconId = id;
             } else {
                 trigger.textContent = '✕';
@@ -2745,7 +3019,7 @@
                 noTimeContainer.innerHTML = '';
                 timeline.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">📝</div>
+                        <div class="empty-state-icon">${getUiSymbol('empty_none', '📝')}</div>
                         <div>No tasks yet. Add one to get started!</div>
                     </div>
                 `;
@@ -2757,7 +3031,7 @@
                 noTimeContainer.innerHTML = '';
                 timeline.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">😴</div>
+                        <div class="empty-state-icon">${getUiSymbol('empty_rest', '😴')}</div>
                         <div>Rest day! No tasks scheduled for today.</div>
                     </div>
                 `;
@@ -2945,7 +3219,7 @@
             const list = document.getElementById('achievementsList');
             list.innerHTML = achievementDefs.map(def => `
                 <div class="achievement ${gameState.achievements.includes(def.id) ? 'unlocked' : ''}" onclick="showAchievementPopup('${def.id}')">
-                    <div class="achievement-icon">${def.icon}</div>
+                    <div class="achievement-icon">${getAchievementIcon(def)}</div>
                     <div class="achievement-name">${def.name}</div>
                 </div>
             `).join('');
@@ -2955,7 +3229,7 @@
             const achievement = achievementDefs.find(a => a.id === achievementId);
             if (!achievement) return;
             
-            document.getElementById('achievementPopupIcon').textContent = achievement.icon;
+            document.getElementById('achievementPopupIcon').textContent = getAchievementIcon(achievement);
             document.getElementById('achievementPopupName').textContent = achievement.name;
             document.getElementById('achievementPopupDescription').textContent = achievement.description;
             
@@ -3212,7 +3486,7 @@
                 ? `<div class="day-popup-task-list">${taskEntries.map(task => `
                     <div class="day-popup-task ${task.completed ? 'done' : 'missed'}">
                         <div>
-                            <div class="day-popup-task-name">${task.icon && task.icon.startsWith('custom:') ? `${task.icon.slice(7)} ` : task.icon && ICON_LIBRARY[task.icon] ? `${ICON_LIBRARY[task.icon].emoji} ` : ''}${task.name}</div>
+                            <div class="day-popup-task-name">${task.icon && task.icon.startsWith('custom:') ? `${task.icon.slice(7)} ` : task.icon && ICON_LIBRARY[task.icon] ? `${getBuiltInTaskIcon(task.icon)} ` : ''}${task.name}</div>
                             <div class="day-popup-task-meta">${task.time ? formatDisplayTime(task.time) : 'No set time'}${task.recurring ? ' • Repeating' : ''}</div>
                         </div>
                         <div class="day-popup-task-status">${task.completed ? 'Done' : 'Missed'}</div>
@@ -3269,11 +3543,11 @@
         // Dark Mode
         function toggleDarkMode() {
             gameState.darkMode = !gameState.darkMode;
-            applyDarkMode();
+            applyAppearance();
             saveGameState();
         }
 
-        function applyDarkMode() {
+        function applyAppearance() {
             if (gameState.darkMode) {
                 document.body.classList.add('dark-mode');
                 document.getElementById('darkModeToggle').checked = true;
@@ -3281,8 +3555,13 @@
                 document.body.classList.remove('dark-mode');
                 document.getElementById('darkModeToggle').checked = false;
             }
+            document.body.classList.toggle('professional-mode', !!gameState.professionalMode);
             const easyModeToggle = document.getElementById('easyModeToggle');
             if (easyModeToggle) easyModeToggle.checked = !!gameState.easyMode;
+            const professionalModeToggle = document.getElementById('professionalModeToggle');
+            if (professionalModeToggle) professionalModeToggle.checked = !!gameState.professionalMode;
+            refreshStaticLabels();
+            updateNotificationStatus();
         }
 
         // Daily Check System - Penalizes missed recurring tasks at midnight
@@ -3385,8 +3664,8 @@
         }
 
         // Celebrations
-        function showCelebration(title, message, icon = '🎉') {
-            document.getElementById('celebrationIcon').textContent = icon;
+        function showCelebration(title, message, icon = null) {
+            document.getElementById('celebrationIcon').textContent = icon || getUiSymbol('celebrate_default', '🎉');
             document.getElementById('celebrationTitle').textContent = title;
             document.getElementById('celebrationMessage').textContent = message;
             document.getElementById('celebration').classList.add('show');
@@ -3431,17 +3710,19 @@
             const btn = document.getElementById('notificationToggleBtn');
             if (status) {
                 status.textContent = gameState.notificationsEnabled 
-                    ? 'Notifications enabled ✓' 
+                    ? `Notifications enabled ${getUiSymbol('progress_done', '✓')}` 
                     : 'Notifications disabled';
-                status.style.color = gameState.notificationsEnabled ? '#51cf66' : '#666';
+                status.style.color = gameState.notificationsEnabled
+                    ? (gameState.professionalMode ? 'var(--day-green)' : '#51cf66')
+                    : 'var(--text-secondary)';
             }
             if (btn) {
                 if (gameState.notificationsEnabled) {
-                    btn.textContent = '🔕 Disable Notifications';
-                    btn.style.background = '#e03131';
+                    btn.textContent = `${getUiSymbol('action_notify_off', '🔕')} Disable Notifications`;
+                    btn.style.background = gameState.professionalMode ? 'var(--accent-danger)' : '#e03131';
                     btn.onclick = disableNotifications;
                 } else {
-                    btn.textContent = '🔔 Enable Notifications';
+                    btn.textContent = `${getUiSymbol('action_notify_on', '🔔')} Enable Notifications`;
                     btn.style.background = '';
                     btn.onclick = requestNotificationPermission;
                 }
@@ -3510,7 +3791,7 @@
             link.click();
             URL.revokeObjectURL(url);
             
-            showCelebration('Data Exported! 💾', 'Your progress has been saved to a file.');
+            showCelebration(gameState.professionalMode ? 'Data Exported' : 'Data Exported! 💾', 'Your progress has been saved to a file.', getUiSymbol('action_export', '💾'));
         }
 
         async function importData(event) {
@@ -3529,9 +3810,9 @@
                         recalculateDailyHistoryRatings();
                         recomputeStreakStats();
                         await saveGameState();
-                        applyDarkMode();
+                        applyAppearance();
                         renderAll();
-                        showCelebration('Data Restored! 📥', 'Your progress has been restored successfully.');
+                        showCelebration(gameState.professionalMode ? 'Data Restored' : 'Data Restored! 📥', 'Your progress has been restored successfully.', getUiSymbol('action_import', '📥'));
                     } else {
                         alert('Invalid backup file format');
                     }
@@ -3626,7 +3907,14 @@
             for (let i = 6; i >= 0; i--) {
                 const date = new Date(today);
                 date.setDate(date.getDate() - i);
-                last7Days.push(getDayStatusEmoji(date, { includeFutureAsBlank: false }));
+                if (gameState.professionalMode) {
+                    const rating = formatDateKey(date) === formatDateKey(today)
+                        ? getDayRating(gameState.completedToday, getRecurringTasksForDate(today).length)
+                        : gameState.dailyHistory[formatDateKey(date)]?.rating || 'none';
+                    last7Days.push(getRatingShareSymbol(rating));
+                } else {
+                    last7Days.push(getDayStatusEmoji(date, { includeFutureAsBlank: false }));
+                }
             }
             
             // Calculate total days tracked (for "Day X")
@@ -3643,7 +3931,7 @@ Best Streak: ${gameState.bestStreak} Days`;
             // Copy to clipboard
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(shareText).then(() => {
-                    showCelebration('Copied to Clipboard! 📋', 'Share your streak with friends!', '📤');
+                    showCelebration(gameState.professionalMode ? 'Copied to Clipboard' : 'Copied to Clipboard! 📋', 'Share your streak with friends!', getUiSymbol('action_share', '📤'));
                 }).catch(err => {
                     fallbackCopyToClipboard(shareText);
                 });
@@ -3670,13 +3958,20 @@ Best Streak: ${gameState.bestStreak} Days`;
             
             // Add empty squares for days before month starts
             for (let i = 0; i < firstDay; i++) {
-                currentLine += '⬜';
+                currentLine += gameState.professionalMode ? '·' : '⬜';
             }
             
             // Add days of the month
             for (let day = 1; day <= daysInMonth; day++) {
                 const date = new Date(year, month, day);
-                currentLine += getDayStatusEmoji(date);
+                if (gameState.professionalMode) {
+                    const rating = formatDateKey(date) === todayKey
+                        ? getDayRating(gameState.completedToday, getRecurringTasksForDate(today).length)
+                        : gameState.dailyHistory[formatDateKey(date)]?.rating || (date > today ? 'none' : 'none');
+                    currentLine += getRatingShareSymbol(rating);
+                } else {
+                    currentLine += getDayStatusEmoji(date);
+                }
                 
                 // Start new line after Sunday (day 0) or if we hit 7 days
                 if ((firstDay + day) % 7 === 0) {
@@ -3728,7 +4023,7 @@ Total Perfect Days: ${adjustedTotal}`;
             // Copy to clipboard
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(shareText).then(() => {
-                    showCelebration('Copied to Clipboard! 📋', 'Share your progress with friends!', '📤');
+                    showCelebration(gameState.professionalMode ? 'Copied to Clipboard' : 'Copied to Clipboard! 📋', 'Share your progress with friends!', getUiSymbol('action_share', '📤'));
                 }).catch(err => {
                     // Fallback for older browsers
                     fallbackCopyToClipboard(shareText);
@@ -3749,7 +4044,7 @@ Total Perfect Days: ${adjustedTotal}`;
             
             try {
                 document.execCommand('copy');
-                showCelebration('Copied to Clipboard! 📋', 'Share your progress with friends!', '📤');
+                showCelebration(gameState.professionalMode ? 'Copied to Clipboard' : 'Copied to Clipboard! 📋', 'Share your progress with friends!', getUiSymbol('action_share', '📤'));
             } catch (err) {
                 alert('Failed to copy. Please try again.');
             }
