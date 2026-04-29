@@ -26,6 +26,7 @@
         html {
             height: 100%;
             overscroll-behavior-y: none;
+            touch-action: manipulation;
         }
 
         :root {
@@ -129,6 +130,7 @@
             transition: background 0.3s ease;
             overflow-x: hidden;
             overscroll-behavior-y: none;
+            touch-action: manipulation;
         }
 
         .container {
@@ -774,6 +776,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            line-height: 1;
         }
 
         .nav-bars {
@@ -782,10 +785,13 @@
             gap: 3px;
             align-items: center;
             justify-content: center;
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
         }
 
         .nav-bars span {
-            width: 16px;
+            width: 14px;
             height: 3px;
             border-radius: 999px;
             background: currentColor;
@@ -1155,7 +1161,7 @@
         }
 
         input:checked + .slider:before {
-            transform: translateX(26px);
+            transform: translateX(24px);
         }
 
         .calendar-container {
@@ -1462,8 +1468,9 @@
             justify-content: center;
             padding: calc(28px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom));
             background:
-                radial-gradient(circle at top left, rgba(255,255,255,0.75), transparent 36%),
-                linear-gradient(160deg, #efe4d7 0%, #d9e4ea 52%, #cddbd8 100%);
+                radial-gradient(circle at top left, rgba(151, 168, 255, 0.5), transparent 34%),
+                radial-gradient(circle at bottom right, rgba(102, 126, 234, 0.16), transparent 36%),
+                linear-gradient(160deg, #f2eee8 0%, #e3e9fb 52%, #eaf0ff 100%);
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
@@ -1478,20 +1485,23 @@
 
         body.dark-mode .onboarding {
             background:
-                radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 34%),
-                linear-gradient(160deg, #141919 0%, #182125 55%, #101516 100%);
+                radial-gradient(circle at top left, rgba(136, 155, 255, 0.2), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(81, 207, 102, 0.08), transparent 34%),
+                linear-gradient(160deg, #151722 0%, #171d30 55%, #121723 100%);
         }
 
         body.professional-mode .onboarding {
             background:
-                radial-gradient(circle at top left, rgba(255,255,255,0.58), transparent 34%),
-                linear-gradient(160deg, #ebe2d7 0%, #d5ded8 50%, #d6dadd 100%);
+                radial-gradient(circle at top left, rgba(185, 196, 233, 0.42), transparent 34%),
+                radial-gradient(circle at bottom right, rgba(95, 116, 128, 0.14), transparent 36%),
+                linear-gradient(160deg, #ece7de 0%, #dde3ef 50%, #e5e8ee 100%);
         }
 
         body.dark-mode.professional-mode .onboarding {
             background:
-                radial-gradient(circle at top left, rgba(255,255,255,0.07), transparent 32%),
-                linear-gradient(160deg, #171c1d 0%, #1d2426 52%, #131819 100%);
+                radial-gradient(circle at top left, rgba(151, 170, 196, 0.15), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(116, 139, 121, 0.08), transparent 34%),
+                linear-gradient(160deg, #171b24 0%, #1b2228 52%, #13181d 100%);
         }
 
         .onboarding-shell {
@@ -1548,7 +1558,7 @@
         }
 
         .onboarding-dot.active {
-            background: var(--onboarding-accent);
+            background: #667eea;
         }
 
         .onboarding-content {
@@ -1564,7 +1574,7 @@
             font-weight: 700;
             letter-spacing: 0.12em;
             text-transform: uppercase;
-            color: var(--onboarding-accent);
+            color: #5568d3;
             margin-bottom: 10px;
         }
 
@@ -1573,7 +1583,7 @@
             font-size: clamp(30px, 7vw, 42px);
             line-height: 1.05;
             letter-spacing: -0.04em;
-            color: #1e2f3c;
+            color: #22345b;
             margin-bottom: 14px;
         }
 
@@ -1581,14 +1591,14 @@
             font-family: "Avenir Next", "Segoe UI", sans-serif;
             font-size: 16px;
             line-height: 1.6;
-            color: #425562;
+            color: #44506e;
             min-height: 132px;
         }
 
         .onboarding-panel {
             margin-top: 22px;
-            background: rgba(255,255,255,0.68);
-            border: 1px solid rgba(35, 76, 99, 0.08);
+            background: rgba(255,255,255,0.72);
+            border: 1px solid rgba(102, 126, 234, 0.1);
             border-radius: 22px;
             padding: 18px;
             height: 100%;
@@ -1613,8 +1623,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(35, 76, 99, 0.1);
-            color: var(--onboarding-accent);
+            background: rgba(102, 126, 234, 0.12);
+            color: #5568d3;
             font-size: 16px;
             font-weight: 700;
         }
@@ -1623,14 +1633,14 @@
             font-family: "Avenir Next", "Segoe UI", sans-serif;
             font-size: 14px;
             font-weight: 700;
-            color: #243744;
+            color: #28406f;
             margin-bottom: 2px;
         }
 
         .onboarding-item-copy {
             font-size: 14px;
             line-height: 1.5;
-            color: #536572;
+            color: #58637f;
         }
 
         .onboarding-actions {
@@ -1651,57 +1661,20 @@
         }
 
         .onboarding-btn.secondary {
-            background: rgba(35, 76, 99, 0.08);
-            color: var(--onboarding-accent);
+            background: rgba(102, 126, 234, 0.08);
+            color: #5568d3;
         }
 
         .onboarding-btn.primary {
-            background: linear-gradient(135deg, #234c63, #3f6d7a);
+            background: linear-gradient(135deg, #667eea, #4f68d8);
             color: white;
-            box-shadow: 0 10px 22px rgba(35, 76, 99, 0.18);
+            box-shadow: 0 10px 22px rgba(102, 126, 234, 0.22);
         }
 
-        body.professional-mode .level-badge,
-        body.professional-mode .progress-fill {
-            background: linear-gradient(135deg, var(--accent-primary), #6c8087);
-        }
-
-        body.professional-mode .points-value,
-        body.professional-mode .streak-number,
         body.professional-mode .task-points,
         body.professional-mode .grid-card-xp,
-        body.professional-mode .nav-item.active,
         body.professional-mode .settings-button {
             color: var(--accent-primary);
-        }
-
-        body.professional-mode #totalGreenDays {
-            color: var(--day-dark-green) !important;
-        }
-
-        body.professional-mode .add-button,
-        body.professional-mode .calendar-nav,
-        body.professional-mode .celebration button,
-        body.professional-mode .btn-primary,
-        body.professional-mode .achievement-popup button,
-        body.professional-mode .day-popup button {
-            background: var(--accent-primary);
-        }
-
-        body.professional-mode #shareStreakBtn,
-        body.professional-mode #shareMonthBtn,
-        body.professional-mode .backup-export,
-        body.professional-mode .backup-import {
-            background: var(--accent-secondary) !important;
-        }
-
-        body.professional-mode #clearDataBtn,
-        body.professional-mode .btn-primary[style*="#ff6b6b"] {
-            background: var(--accent-danger) !important;
-        }
-
-        body.professional-mode .add-button:hover {
-            background: #50636d;
         }
 
         body.professional-mode .timeline-circle,
@@ -1755,11 +1728,6 @@
             background: rgba(110, 118, 125, 0.2);
         }
 
-        body.professional-mode .onboarding-btn.primary {
-            background: linear-gradient(135deg, var(--onboarding-accent), #66797f);
-        }
-
-        body.professional-mode .header,
         body.professional-mode .section,
         body.professional-mode .modal,
         body.professional-mode .celebration,
@@ -1779,15 +1747,6 @@
             color: #2f3439;
         }
 
-        body.professional-mode #colorLegendBtn,
-        body.professional-mode #colorLegendCloseBtn {
-            background: var(--accent-primary) !important;
-        }
-
-        body.professional-mode #deleteTaskBtn {
-            background: var(--accent-danger) !important;
-        }
-
         body.professional-mode .slider {
             background-color: #b8b3ab;
         }
@@ -1796,9 +1755,6 @@
             background-color: #3c4649;
         }
 
-        body.professional-mode input:checked + .slider:before {
-            transform: translateX(24px);
-        }
     </style>
 </head>
 <body>
@@ -2227,7 +2183,7 @@
                 title: 'Color the calendar with your progress.',
                 copy: 'Every day is color-graded by how many tasks you finished, giving you an immediate view of consistency across the month. Over time, the calendar becomes a clear record of momentum and recovery over months.',
                 items: [
-                    ['◔', 'Color-coded days', 'The more of your routine you complete, the stronger your day appears on the calendar.'],
+                    ['▣▢', 'Color-coded days', 'The more of your routine you complete, the stronger your day appears on the calendar.'],
                     ['▦', 'Easy to review', 'You can quickly spot patterns, strong stretches, and areas where you want more consistency.']
                 ]
             },
@@ -3810,7 +3766,7 @@
             if (btn) {
                 if (gameState.notificationsEnabled) {
                     btn.textContent = gameState.professionalMode ? 'Disable Notifications' : `${getUiSymbol('action_notify_off', '🔕')} Disable Notifications`;
-                    btn.style.background = gameState.professionalMode ? 'var(--accent-danger)' : '#e03131';
+                    btn.style.background = '#e03131';
                     btn.onclick = disableNotifications;
                 } else {
                     btn.textContent = gameState.professionalMode ? 'Enable Notifications' : `${getUiSymbol('action_notify_on', '🔔')} Enable Notifications`;
