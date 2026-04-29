@@ -816,6 +816,7 @@
 
         .modal.show {
             display: block;
+            animation: modalRise 0.28s ease;
         }
 
         .modal h3 {
@@ -1209,6 +1210,7 @@
 
         .day-popup.show {
             display: block;
+            animation: modalRise 0.28s ease;
         }
 
         .day-popup h3 {
@@ -1316,6 +1318,21 @@
 
         .achievement-popup.show {
             display: block;
+            animation: modalRise 0.28s ease;
+        }
+
+        .icon-popup.show {
+            animation: sheetRise 0.28s cubic-bezier(.4,0,.2,1);
+        }
+
+        @keyframes modalRise {
+            0% { transform: translate(-50%, -46%) scale(0.96); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        @keyframes sheetRise {
+            0% { opacity: 0; transform: translateY(100%); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         .achievement-popup .achievement-icon {
@@ -1349,6 +1366,10 @@
             color: var(--text-secondary);
         }
 
+        #importFile {
+            display: none;
+        }
+
         body.dark-mode input[type="file"],
         body.dark-mode input,
         body.dark-mode textarea {
@@ -1375,12 +1396,16 @@
         .onboarding-shell {
             width: 100%;
             max-width: 560px;
+            min-height: 640px;
             background: var(--onboarding-sand);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255,255,255,0.55);
             border-radius: 28px;
             box-shadow: 0 20px 60px rgba(28, 45, 58, 0.16);
             overflow: hidden;
+            animation: modalRise 0.34s ease;
+            display: flex;
+            flex-direction: column;
         }
 
         .onboarding-header {
@@ -1427,6 +1452,7 @@
 
         .onboarding-content {
             padding: 22px 22px 10px;
+            flex: 1;
         }
 
         .onboarding-kicker {
@@ -1622,6 +1648,19 @@
                     </label>
                 </div>
 
+                <div class="toggle-switch">
+                    <div>
+                        <label>Easy Mode</label>
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px; max-width: 360px;">
+                            Gives more XP, lets your streak survive one bad day, and makes the calendar more forgiving.
+                        </p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="easyModeToggle" onchange="toggleEasyMode()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
                 <div style="margin-bottom: 20px;">
                     <h4 style="margin-bottom: 4px; color: var(--text-primary);">Schedule View</h4>
                     <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 0;">How tasks are displayed on the Schedule tab</p>
@@ -1642,20 +1681,6 @@
                     <h4 style="margin-bottom: 10px; color: var(--text-primary);">Notifications</h4>
                     <button class="add-button" id="notificationToggleBtn" onclick="requestNotificationPermission()">🔔 Enable Notifications</button>
                     <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;" id="notificationStatus">Notifications disabled</p>
-                </div>
-
-                <div class="toggle-switch">
-                    <div>
-                        <label>Easy Mode</label>
-                        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px; max-width: 360px;">
-                            Gives 50% more XP, lets your streak survive one bad day, and makes the calendar more forgiving:
-                            dark green is 100%, green is 50-99%, yellow is 11-49%, orange is 1-10%, and red is 0%.
-                        </p>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="easyModeToggle" onchange="toggleEasyMode()">
-                        <span class="slider"></span>
-                    </label>
                 </div>
 
                 <div class="backup-section">
@@ -1896,21 +1921,21 @@
                 ]
             },
             {
-                kicker: 'How It Works',
-                title: 'Your calendar becomes a readable picture of your consistency.',
-                copy: 'Each day gets a color based on how much of your routine you completed. Over time, your streak, history, and progress make it easier to notice patterns without overthinking them.',
+                kicker: 'Your Calendar',
+                title: 'Your month fills up with color as you complete more of your routine.',
+                copy: 'Every day is graded by how many of your scheduled tasks you finished. Stronger completion gives you stronger colors, so one glance at your calendar can show where you were locked in, where you were close, and where you need a reset.',
                 items: [
-                    ['DG', 'Dark green', 'A perfect day: every scheduled task got done.'],
-                    ['G', 'Green and beyond', 'The rest of the colors show how close you got, from strong days to reset days.']
+                    ['CAL', 'Color-coded days', 'Finished more tasks? Your day lands in a better color range.'],
+                    ['LOOK', 'Easy to read back', 'The calendar becomes a visual record of your momentum over time.']
                 ]
             },
             {
-                kicker: 'Built To Fit You',
-                title: 'Use normal rules, or switch on a softer version when you need it.',
-                copy: 'You can long-press tasks to edit them, add times if you want reminders, and turn on Easy Mode in Settings for more forgiving colors, extra XP, and one protected bad day per streak.',
+                kicker: 'Leveling Up',
+                title: 'The app tracks your work with a simple leveling system.',
+                copy: 'Each completed task gives you XP. As your XP rises, you level up and build a longer record of consistency. Harder days still count, and better streaks and fuller days help you stack progress faster over time.',
                 items: [
-                    ['+', 'Quick add', 'Create tasks with optional times, icons, and repeating days.'],
-                    ['E', 'Easy Mode', 'A gentler scoring model for rebuilding rhythm without losing all your progress.']
+                    ['XP', 'Complete tasks', 'Checking off tasks earns XP every day.'],
+                    ['LVL', 'Keep building', 'More XP means higher levels, longer progress, and a clearer sense of growth.']
                 ]
             }
         ];
@@ -3098,11 +3123,16 @@
             gameState.onboardingCompleted = true;
             saveGameState();
             document.getElementById('onboarding').classList.remove('show');
+            switchTab('schedule');
+            window.scrollTo(0, 0);
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
         }
 
         function maybeShowOnboarding() {
             if (gameState.onboardingCompleted) return;
             onboardingSlideIndex = 0;
+            window.scrollTo(0, 0);
             renderOnboarding();
         }
 
