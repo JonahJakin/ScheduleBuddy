@@ -29,8 +29,8 @@
         }
 
         :root {
-            --bg-gradient-start: #f5f0eb;
-            --bg-gradient-end: #ede6df;
+            --bg-gradient-start: #f1ece6;
+            --bg-gradient-end: #f1ece6;
             --card-bg: white;
             --text-primary: #333;
             --text-secondary: #666;
@@ -51,8 +51,8 @@
         }
 
         body.dark-mode {
-            --bg-gradient-start: #1a1a1a;
-            --bg-gradient-end: #141414;
+            --bg-gradient-start: #171717;
+            --bg-gradient-end: #171717;
             --card-bg: #2a2a2a;
             --text-primary: #e8e8e8;
             --text-secondary: #a0a0a0;
@@ -67,8 +67,8 @@
         }
 
         body.professional-mode {
-            --bg-gradient-start: #f1eee8;
-            --bg-gradient-end: #e2dfd8;
+            --bg-gradient-start: #ece6dd;
+            --bg-gradient-end: #ece6dd;
             --card-bg: #fbfaf8;
             --text-primary: #30363a;
             --text-secondary: #5e686e;
@@ -86,12 +86,38 @@
             --accent-primary: #5f7480;
             --accent-secondary: #72897a;
             --accent-danger: #8d6b6b;
-            font-family: "Avenir Next", "Segoe UI", sans-serif;
+        }
+
+        body.dark-mode.professional-mode {
+            --bg-gradient-start: #161a1b;
+            --bg-gradient-end: #161a1b;
+            --card-bg: #1a2022;
+            --text-primary: #e2e7e6;
+            --text-secondary: #a6b0af;
+            --text-tertiary: #798282;
+            --border-color: #2a3234;
+            --input-bg: #111719;
+            --completed-bg: #1a211f;
+            --day-dark-green: #5b7a67;
+            --day-green: #75907b;
+            --day-yellow: #b39f68;
+            --day-orange: #9f7960;
+            --day-red: #8f6666;
+            --onboarding-accent: #90a4ab;
+            --onboarding-sand: rgba(22, 27, 29, 0.92);
+            --accent-primary: #8ea3aa;
+            --accent-secondary: #748b79;
+            --accent-danger: #997070;
         }
 
         body.professional-mode .task-recurring {
             background: rgba(95, 116, 128, 0.1);
             color: #4b616c;
+        }
+
+        body.dark-mode.professional-mode .task-recurring {
+            background: rgba(142, 163, 170, 0.14);
+            color: #b2c1c6;
         }
 
         body {
@@ -744,6 +770,26 @@
 
         .nav-icon {
             font-size: 24px;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-bars span {
+            width: 16px;
+            height: 3px;
+            border-radius: 999px;
+            background: currentColor;
+            display: block;
         }
 
         .tab-content {
@@ -1411,23 +1457,47 @@
             position: fixed;
             inset: 0;
             z-index: 4000;
-            display: none;
+            display: flex;
             align-items: center;
             justify-content: center;
             padding: calc(28px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom));
             background:
                 radial-gradient(circle at top left, rgba(255,255,255,0.75), transparent 36%),
                 linear-gradient(160deg, #efe4d7 0%, #d9e4ea 52%, #cddbd8 100%);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.24s ease;
         }
 
         .onboarding.show {
-            display: flex;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        body.dark-mode .onboarding {
+            background:
+                radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 34%),
+                linear-gradient(160deg, #141919 0%, #182125 55%, #101516 100%);
+        }
+
+        body.professional-mode .onboarding {
+            background:
+                radial-gradient(circle at top left, rgba(255,255,255,0.58), transparent 34%),
+                linear-gradient(160deg, #ebe2d7 0%, #d5ded8 50%, #d6dadd 100%);
+        }
+
+        body.dark-mode.professional-mode .onboarding {
+            background:
+                radial-gradient(circle at top left, rgba(255,255,255,0.07), transparent 32%),
+                linear-gradient(160deg, #171c1d 0%, #1d2426 52%, #131819 100%);
         }
 
         .onboarding-shell {
             width: 100%;
             max-width: 560px;
-            min-height: 640px;
+            height: min(680px, calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 56px));
             background: var(--onboarding-sand);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255,255,255,0.55);
@@ -1484,8 +1554,8 @@
         .onboarding-content {
             padding: 22px 22px 10px;
             flex: 1;
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-rows: auto auto 132px minmax(0, 1fr);
         }
 
         .onboarding-kicker {
@@ -1512,7 +1582,7 @@
             font-size: 16px;
             line-height: 1.6;
             color: #425562;
-            min-height: 128px;
+            min-height: 132px;
         }
 
         .onboarding-panel {
@@ -1521,7 +1591,7 @@
             border: 1px solid rgba(35, 76, 99, 0.08);
             border-radius: 22px;
             padding: 18px;
-            flex: 1;
+            height: 100%;
         }
 
         .onboarding-list {
@@ -1650,6 +1720,18 @@
             background: var(--accent-primary);
         }
 
+        body.professional-mode .timeline-pill {
+            background: var(--accent-primary);
+        }
+
+        body.professional-mode .timeline-pill.completed {
+            background: rgba(95, 116, 128, 0.35);
+        }
+
+        body.dark-mode.professional-mode .timeline-pill.completed {
+            background: rgba(142, 163, 170, 0.35);
+        }
+
         body.professional-mode .task-checkbox,
         body.professional-mode .checkbox-group input[type="checkbox"] {
             accent-color: var(--accent-primary);
@@ -1675,21 +1757,6 @@
 
         body.professional-mode .onboarding-btn.primary {
             background: linear-gradient(135deg, var(--onboarding-accent), #66797f);
-        }
-
-        body.professional-mode .onboarding-title,
-        body.professional-mode .section-title,
-        body.professional-mode .level-details h2,
-        body.professional-mode .calendar-month {
-            color: #24353d;
-        }
-
-        body.professional-mode .onboarding-copy,
-        body.professional-mode .onboarding-item-copy,
-        body.professional-mode .level-details p,
-        body.professional-mode .points-label,
-        body.professional-mode .streak-label {
-            color: #5b686f;
         }
 
         body.professional-mode .header,
@@ -1719,6 +1786,18 @@
 
         body.professional-mode #deleteTaskBtn {
             background: var(--accent-danger) !important;
+        }
+
+        body.professional-mode .slider {
+            background-color: #b8b3ab;
+        }
+
+        body.dark-mode.professional-mode .slider {
+            background-color: #3c4649;
+        }
+
+        body.professional-mode input:checked + .slider:before {
+            transform: translateX(24px);
         }
     </style>
 </head>
@@ -2113,16 +2192,16 @@
             achievement_locked_in: '▣',
             achievement_super_streaker: '↟',
             achievement_salvation: '◆',
-            nav_schedule: '□',
+            nav_schedule: 'bars',
             nav_calendar: '▦',
             nav_achievements: '◆',
             nav_settings: '⋯',
             action_share: '↗',
-            action_export: '⇣',
-            action_import: '⇡',
-            action_clear: '×',
-            action_notify_on: '◔',
-            action_notify_off: '◕',
+            action_export: '',
+            action_import: '',
+            action_clear: '',
+            action_notify_on: '',
+            action_notify_off: '',
             empty_none: '□',
             empty_rest: '—',
             celebrate_default: '◆',
@@ -2146,7 +2225,7 @@
             {
                 kicker: 'Your Calendar',
                 title: 'Color the calendar with your progress.',
-                copy: 'Every day is color-graded by how many tasks you finished, giving you an immediate view of consistency across the month. Over time, the calendar becomes a clear visual record of momentum, recovery, and sustained follow-through.',
+                copy: 'Every day is color-graded by how many tasks you finished, giving you an immediate view of consistency across the month. Over time, the calendar becomes a clear record of momentum and recovery over months.',
                 items: [
                     ['◔', 'Color-coded days', 'The more of your routine you complete, the stronger your day appears on the calendar.'],
                     ['▦', 'Easy to review', 'You can quickly spot patterns, strong stretches, and areas where you want more consistency.']
@@ -2158,7 +2237,7 @@
                 copy: 'Each completed task adds XP, while missed tasks can reduce your current progress toward the next level. Once a level is earned, however, it stays earned, even if you go through a period of missed tasks.',
                 items: [
                     ['▲', 'Progress moves with your work', 'Completing tasks moves the bar forward, while missed tasks can pull current progress back.'],
-                    ['◆', 'Levels remain secure', 'After you reach a new level, that milestone remains yours during harder stretches.']
+                    ['⚿', 'Levels remain secure', 'After you reach a new level, that milestone remains yours during harder stretches.']
                 ]
             }
         ];
@@ -2345,12 +2424,16 @@
                 if (task.icon.startsWith('custom:')) return task.icon.slice(7);
                 return getBuiltInTaskIcon(task.icon) || '';
             }
-            return task.recurring ? '↺' : '○';
+            return '';
         }
 
         function getAchievementIcon(def) {
-            if (!gameState.professionalMode) return def.icon;
-            return PROFESSIONAL_SYMBOLS[`achievement_${def.id}`] || '◆';
+            return def.icon;
+        }
+
+        function getPickerTaskIcon(id) {
+            if (!ICON_LIBRARY[id]) return '';
+            return ICON_LIBRARY[id].emoji;
         }
 
         function getRatingShareSymbol(rating) {
@@ -2367,14 +2450,20 @@
             const byId = (id) => document.getElementById(id);
             if (byId('shareStreakBtn')) byId('shareStreakBtn').textContent = `${getUiSymbol('action_share', '📤')} Share Streak`;
             if (byId('shareMonthBtn')) byId('shareMonthBtn').textContent = `${getUiSymbol('action_share', '📤')} Share`;
-            if (byId('exportDataBtn')) byId('exportDataBtn').textContent = `${getUiSymbol('action_export', '📥')} Export My Data`;
-            if (byId('importDataBtn')) byId('importDataBtn').textContent = `${getUiSymbol('action_import', '📤')} Import Data`;
-            if (byId('clearDataBtn')) byId('clearDataBtn').textContent = `${getUiSymbol('action_clear', '🗑️')} Clear All Data`;
-            if (byId('scheduleNavIcon')) byId('scheduleNavIcon').textContent = getUiSymbol('nav_schedule', '✓');
+            if (byId('exportDataBtn')) byId('exportDataBtn').textContent = gameState.professionalMode ? 'Export My Data' : `${getUiSymbol('action_export', '📥')} Export My Data`;
+            if (byId('importDataBtn')) byId('importDataBtn').textContent = gameState.professionalMode ? 'Import Data' : `${getUiSymbol('action_import', '📤')} Import Data`;
+            if (byId('clearDataBtn')) byId('clearDataBtn').textContent = gameState.professionalMode ? 'Clear All Data' : `${getUiSymbol('action_clear', '🗑️')} Clear All Data`;
+            if (byId('scheduleNavIcon')) {
+                if (gameState.professionalMode) {
+                    byId('scheduleNavIcon').innerHTML = '<span class="nav-bars"><span></span><span></span><span></span></span>';
+                } else {
+                    byId('scheduleNavIcon').textContent = '✓';
+                }
+            }
             if (byId('calendarNavIcon')) byId('calendarNavIcon').textContent = getUiSymbol('nav_calendar', '📅');
             if (byId('achievementsNavIcon')) byId('achievementsNavIcon').textContent = getUiSymbol('nav_achievements', '🏆');
             if (byId('settingsNavIcon')) byId('settingsNavIcon').textContent = getUiSymbol('nav_settings', '⚙️');
-            if (byId('clearDataTitle')) byId('clearDataTitle').textContent = `${getUiSymbol('alert_clear', '⚠️')} Clear All Data?`;
+            if (byId('clearDataTitle')) byId('clearDataTitle').textContent = gameState.professionalMode ? 'Clear All Data?' : `${getUiSymbol('alert_clear', '⚠️')} Clear All Data?`;
         }
 
         function toggleProfessionalMode() {
@@ -2496,7 +2585,7 @@
             const percentage = getCompletionPercentage(completedTasks, totalTasks);
 
             if (gameState.easyMode) {
-                if (percentage === 100) return 'darkgreen';
+                if (percentage >= 76) return 'darkgreen';
                 if (percentage >= 50) return 'green';
                 if (percentage >= 11) return 'yellow';
                 if (percentage >= 1) return 'orange';
@@ -2709,7 +2798,7 @@
                 editTrigger.textContent = task.icon.slice(7);
                 editTrigger.dataset.iconId = task.icon;
             } else if (task.icon && ICON_LIBRARY[task.icon]) {
-                editTrigger.textContent = getBuiltInTaskIcon(task.icon);
+                editTrigger.textContent = getPickerTaskIcon(task.icon);
                 editTrigger.dataset.iconId = task.icon;
             } else {
                 editTrigger.textContent = '✕';
@@ -2957,7 +3046,7 @@
                 `<button class="icon-popup-btn ${iconPopupSelected === id ? 'selected' : ''}"
                          data-icon-id="${id}"
                          onclick="iconPopupPick('${id}')"
-                         title="${label}">${getBuiltInTaskIcon(id) || emoji}</button>`
+                         title="${label}">${emoji}</button>`
             ).join('');
 
             grid.innerHTML = html;
@@ -2976,7 +3065,7 @@
 
             const trigger = document.getElementById(iconPopupSource + 'IconTrigger');
             if (id && ICON_LIBRARY[id]) {
-                trigger.textContent = getBuiltInTaskIcon(id);
+                trigger.textContent = getPickerTaskIcon(id);
                 trigger.dataset.iconId = id;
             } else {
                 trigger.textContent = '✕';
@@ -3057,7 +3146,9 @@
                 const [h, m] = timeStr.split(':').map(Number);
                 const taskMinutes = h * 60 + m;
                 const nowMinutes  = now.getHours() * 60 + now.getMinutes();
-                return taskMinutes <= nowMinutes ? '#667eea' : 'var(--text-tertiary)';
+                return taskMinutes <= nowMinutes
+                    ? (gameState.professionalMode ? 'var(--accent-primary)' : '#667eea')
+                    : 'var(--text-tertiary)';
             }
 
             const checkSVG = `<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -3258,8 +3349,8 @@
             if (!legend) return;
 
             const rows = gameState.easyMode ? [
-                ['var(--day-dark-green)', 'Dark Green Day', 'Completed all tasks (100%)'],
-                ['var(--day-green)', 'Green Day', 'Completed 50-99% of tasks'],
+                ['var(--day-dark-green)', 'Dark Green Day', 'Completed 76-100% of tasks'],
+                ['var(--day-green)', 'Green Day', 'Completed 50-75% of tasks'],
                 ['var(--day-yellow)', 'Yellow Day', 'Completed 11-49% of tasks'],
                 ['var(--day-orange)', 'Orange Day', 'Completed 1-10% of tasks'],
                 ['var(--day-red)', 'Red Day', 'Completed 0% of tasks']
@@ -3718,11 +3809,11 @@
             }
             if (btn) {
                 if (gameState.notificationsEnabled) {
-                    btn.textContent = `${getUiSymbol('action_notify_off', '🔕')} Disable Notifications`;
+                    btn.textContent = gameState.professionalMode ? 'Disable Notifications' : `${getUiSymbol('action_notify_off', '🔕')} Disable Notifications`;
                     btn.style.background = gameState.professionalMode ? 'var(--accent-danger)' : '#e03131';
                     btn.onclick = disableNotifications;
                 } else {
-                    btn.textContent = `${getUiSymbol('action_notify_on', '🔔')} Enable Notifications`;
+                    btn.textContent = gameState.professionalMode ? 'Enable Notifications' : `${getUiSymbol('action_notify_on', '🔔')} Enable Notifications`;
                     btn.style.background = '';
                     btn.onclick = requestNotificationPermission;
                 }
