@@ -23,6 +23,11 @@
             box-sizing: border-box;
         }
 
+        html {
+            height: 100%;
+            overscroll-behavior-y: none;
+        }
+
         :root {
             --bg-gradient-start: #f5f0eb;
             --bg-gradient-end: #ede6df;
@@ -33,6 +38,13 @@
             --border-color: #e8e8e8;
             --input-bg: #f8f9fa;
             --completed-bg: #e8f5e9;
+            --day-dark-green: #2f9e44;
+            --day-green: #51cf66;
+            --day-yellow: #ffd43b;
+            --day-orange: #ff922b;
+            --day-red: #ff6b6b;
+            --onboarding-accent: #234c63;
+            --onboarding-sand: rgba(255,255,255,0.78);
         }
 
         body.dark-mode {
@@ -58,6 +70,8 @@
             padding: calc(24px + env(safe-area-inset-top)) 24px 24px;
             padding-bottom: calc(90px + env(safe-area-inset-bottom));
             transition: background 0.3s ease;
+            overflow-x: hidden;
+            overscroll-behavior-y: none;
         }
 
         .container {
@@ -198,7 +212,10 @@
         
         .add-button:hover {
             background: #4557c2;
-            transform: translateY(-1px);
+        }
+
+        .add-button:active {
+            transform: none;
         }
 
         .task-list {
@@ -422,6 +439,18 @@
             transition: all 0.2s ease;
             border: 1px solid var(--border-color);
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .task-item,
+        .timeline-row,
+        .grid-card,
+        .timeline-circle,
+        .grid-card-circle,
+        .icon-trigger,
+        .day-pill {
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
         }
         
         .task-item:hover {
@@ -839,11 +868,46 @@
             background: var(--input-bg);
             color: var(--text-primary);
             transition: border-color 0.2s ease;
+            min-height: 48px;
+            -webkit-appearance: none;
+            appearance: none;
         }
 
         .form-group input[type="time"]:focus {
             outline: none;
             border-color: #667eea;
+        }
+
+        .time-input-wrap {
+            position: relative;
+        }
+
+        .time-input-wrap::after {
+            content: "◷";
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            pointer-events: none;
+            font-size: 16px;
+        }
+
+        .time-input-wrap input[type="time"] {
+            padding-right: 40px;
+        }
+
+        .time-input-wrap input[type="time"]::-webkit-calendar-picker-indicator {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .notification-group.hidden {
+            display: none;
         }
 
         .checkbox-group {
@@ -1079,9 +1143,14 @@
             cursor: default;
         }
 
-        .calendar-day.future, .calendar-day.no-tasks {
-            background: var(--input-bg);
+        .calendar-day.future {
+            background: rgba(127, 127, 127, 0.12);
             color: var(--text-tertiary);
+        }
+
+        .calendar-day.no-tasks {
+            background: rgba(127, 127, 127, 0.24);
+            color: var(--text-secondary);
         }
 
         .calendar-day.today {
@@ -1090,23 +1159,28 @@
             border: 2px solid #667eea;
         }
 
+        .calendar-day.darkgreen {
+            background: var(--day-dark-green);
+            color: white;
+        }
+
         .calendar-day.green {
-            background: #51cf66;
+            background: var(--day-green);
             color: white;
         }
 
         .calendar-day.yellow {
-            background: #ffd43b;
+            background: var(--day-yellow);
             color: #333;
         }
 
         .calendar-day.orange {
-            background: #ff922b;
+            background: var(--day-orange);
             color: white;
         }
 
         .calendar-day.red {
-            background: #ff6b6b;
+            background: var(--day-red);
             color: white;
         }
 
@@ -1147,6 +1221,71 @@
             color: var(--text-secondary);
             margin-bottom: 20px;
             font-size: 16px;
+        }
+
+        .day-popup-content {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .day-popup-task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .day-popup-task {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            background: var(--input-bg);
+            border-radius: 12px;
+            color: var(--text-primary);
+        }
+
+        .day-popup-task.done {
+            border: 1px solid rgba(81, 207, 102, 0.35);
+        }
+
+        .day-popup-task.missed {
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .day-popup-task-name {
+            min-width: 0;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .day-popup-task-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 3px;
+        }
+
+        .day-popup-task-status {
+            flex-shrink: 0;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .day-popup-task.done .day-popup-task-status {
+            color: #2f9e44;
+        }
+
+        .day-popup-task.missed .day-popup-task-status {
+            color: #e03131;
+        }
+
+        .day-popup-empty {
+            color: var(--text-secondary);
+            font-size: 14px;
+            text-align: center;
+            padding: 10px 0;
         }
 
         .day-popup button {
@@ -1204,6 +1343,191 @@
             border-radius: 12px;
             cursor: pointer;
             font-weight: 500;
+        }
+
+        input[type="file"] {
+            color: var(--text-secondary);
+        }
+
+        body.dark-mode input[type="file"],
+        body.dark-mode input,
+        body.dark-mode textarea {
+            color-scheme: dark;
+        }
+
+        .onboarding {
+            position: fixed;
+            inset: 0;
+            z-index: 4000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: calc(28px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom));
+            background:
+                radial-gradient(circle at top left, rgba(255,255,255,0.75), transparent 36%),
+                linear-gradient(160deg, #efe4d7 0%, #d9e4ea 52%, #cddbd8 100%);
+        }
+
+        .onboarding.show {
+            display: flex;
+        }
+
+        .onboarding-shell {
+            width: 100%;
+            max-width: 560px;
+            background: var(--onboarding-sand);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.55);
+            border-radius: 28px;
+            box-shadow: 0 20px 60px rgba(28, 45, 58, 0.16);
+            overflow: hidden;
+        }
+
+        .onboarding-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 22px 0;
+        }
+
+        .onboarding-brand {
+            font-family: "Avenir Next", "Segoe UI", sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--onboarding-accent);
+        }
+
+        .onboarding-skip {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .onboarding-progress {
+            display: flex;
+            gap: 8px;
+            padding: 18px 22px 0;
+        }
+
+        .onboarding-dot {
+            flex: 1;
+            height: 4px;
+            border-radius: 999px;
+            background: rgba(35, 76, 99, 0.12);
+        }
+
+        .onboarding-dot.active {
+            background: var(--onboarding-accent);
+        }
+
+        .onboarding-content {
+            padding: 22px 22px 10px;
+        }
+
+        .onboarding-kicker {
+            font-family: "Avenir Next", "Segoe UI", sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--onboarding-accent);
+            margin-bottom: 10px;
+        }
+
+        .onboarding-title {
+            font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+            font-size: clamp(30px, 7vw, 42px);
+            line-height: 1.05;
+            letter-spacing: -0.04em;
+            color: #1e2f3c;
+            margin-bottom: 14px;
+        }
+
+        .onboarding-copy {
+            font-family: "Avenir Next", "Segoe UI", sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #425562;
+        }
+
+        .onboarding-panel {
+            margin-top: 22px;
+            background: rgba(255,255,255,0.68);
+            border: 1px solid rgba(35, 76, 99, 0.08);
+            border-radius: 22px;
+            padding: 18px;
+        }
+
+        .onboarding-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .onboarding-item {
+            display: grid;
+            grid-template-columns: 34px 1fr;
+            gap: 12px;
+            align-items: start;
+        }
+
+        .onboarding-item-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(35, 76, 99, 0.1);
+            color: var(--onboarding-accent);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .onboarding-item-title {
+            font-family: "Avenir Next", "Segoe UI", sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #243744;
+            margin-bottom: 2px;
+        }
+
+        .onboarding-item-copy {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #536572;
+        }
+
+        .onboarding-actions {
+            display: flex;
+            gap: 10px;
+            padding: 20px 22px 24px;
+        }
+
+        .onboarding-btn {
+            flex: 1;
+            min-height: 50px;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            font-family: "Avenir Next", "Segoe UI", sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .onboarding-btn.secondary {
+            background: rgba(35, 76, 99, 0.08);
+            color: var(--onboarding-accent);
+        }
+
+        .onboarding-btn.primary {
+            background: linear-gradient(135deg, #234c63, #3f6d7a);
+            color: white;
+            box-shadow: 0 10px 22px rgba(35, 76, 99, 0.18);
         }
     </style>
 </head>
@@ -1320,6 +1644,20 @@
                     <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;" id="notificationStatus">Notifications disabled</p>
                 </div>
 
+                <div class="toggle-switch">
+                    <div>
+                        <label>Easy Mode</label>
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px; max-width: 360px;">
+                            Gives 50% more XP, lets your streak survive one bad day, and makes the calendar more forgiving:
+                            dark green is 100%, green is 50-99%, yellow is 11-49%, orange is 1-10%, and red is 0%.
+                        </p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="easyModeToggle" onchange="toggleEasyMode()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
                 <div class="backup-section">
                     <h4 style="margin-bottom: 15px; color: var(--text-primary);">Backup & Restore</h4>
                     <button class="backup-export" onclick="exportData()">📥 Export My Data</button>
@@ -1367,14 +1705,14 @@
         <h3>Add Task</h3>
         <div class="name-row">
             <div class="form-group">
-                <label>Task Name</label>
+                <label>Name</label>
                 <input type="text" id="modalTaskName" placeholder="What do you need to do?" style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 12px; background: var(--input-bg); color: var(--text-primary); font-size: 16px;" />
             </div>
-            <button class="icon-trigger" id="modalIconTrigger" onclick="openIconPopup('modal')">⭐</button>
+            <button class="icon-trigger" id="modalIconTrigger" onclick="openIconPopup('modal')">✕</button>
         </div>
 
         <div class="checkbox-group">
-            <input type="checkbox" id="modalRecurring" onchange="toggleDaySelector('modal')" />
+            <input type="checkbox" id="modalRecurring" onchange="toggleDaySelector('modal')" checked />
             <label for="modalRecurring">Repeat daily</label>
         </div>
         <div class="day-selector visible" id="modalDaySelector">
@@ -1388,11 +1726,13 @@
         </div>
         
         <div class="form-group">
-            <label>Task Start Time (optional)</label>
-            <input type="time" id="modalTime" style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 12px; background: var(--input-bg); color: var(--text-primary); font-size: 16px;" />
+            <label>Start Time (optional)</label>
+            <div class="time-input-wrap">
+                <input type="time" id="modalTime" style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 12px; background: var(--input-bg); color: var(--text-primary); font-size: 16px;" />
+            </div>
         </div>
         
-        <div class="checkbox-group">
+        <div class="checkbox-group notification-group hidden" id="modalNotificationGroup">
             <input type="checkbox" id="modalNotification" />
             <label for="modalNotification">Notify me at start time</label>
         </div>
@@ -1407,10 +1747,10 @@
         <h3>Edit Task</h3>
         <div class="name-row">
             <div class="form-group">
-                <label>Task Name</label>
+                <label>Name</label>
                 <input type="text" id="editTaskName" placeholder="What do you need to do?" style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 12px; background: var(--input-bg); color: var(--text-primary); font-size: 16px;" />
             </div>
-            <button class="icon-trigger" id="editIconTrigger" onclick="openIconPopup('edit')">⭐</button>
+            <button class="icon-trigger" id="editIconTrigger" onclick="openIconPopup('edit')">✕</button>
         </div>
         
         <div class="checkbox-group">
@@ -1428,11 +1768,13 @@
         </div>
         
         <div class="form-group">
-            <label>Task Start Time (optional)</label>
-            <input type="time" id="editTime" style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 12px; background: var(--input-bg); color: var(--text-primary); font-size: 16px;" />
+            <label>Start Time (optional)</label>
+            <div class="time-input-wrap">
+                <input type="time" id="editTime" style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 12px; background: var(--input-bg); color: var(--text-primary); font-size: 16px;" />
+            </div>
         </div>
         
-        <div class="checkbox-group">
+        <div class="checkbox-group notification-group hidden" id="editNotificationGroup">
             <input type="checkbox" id="editNotification" />
             <label for="editNotification">Notify me at start time</label>
         </div>
@@ -1476,6 +1818,7 @@
     <div class="day-popup" id="dayPopup">
         <h3 id="dayPopupDate"></h3>
         <p id="dayPopupStats"></p>
+        <div class="day-popup-content" id="dayPopupContent"></div>
         <button onclick="closeDayPopup()">Close</button>
     </div>
 
@@ -1488,28 +1831,23 @@
 
     <div class="modal" id="colorLegendModal">
         <h3>Calendar Color Guide</h3>
-        <div style="text-align: left; margin: 20px 0; line-height: 1.8; color: var(--text-primary);">
-            <div style="margin-bottom: 12px;">
-                <span style="display: inline-block; width: 20px; height: 20px; background: #51cf66; border-radius: 4px; vertical-align: middle; margin-right: 8px;"></span>
-                <strong>Green Day</strong> — Completed all tasks (100%)
+        <div id="colorLegendContent" style="text-align: left; margin: 20px 0; line-height: 1.8; color: var(--text-primary);"></div>
+        <button onclick="closeColorLegend()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 500; font-size: 15px;">Got it!</button>
+    </div>
+
+    <div class="onboarding" id="onboarding">
+        <div class="onboarding-shell">
+            <div class="onboarding-header">
+                <div class="onboarding-brand">ScheduleBuddy</div>
+                <button class="onboarding-skip" onclick="completeOnboarding()">Skip</button>
             </div>
-            <div style="margin-bottom: 12px;">
-                <span style="display: inline-block; width: 20px; height: 20px; background: #ffd43b; border-radius: 4px; vertical-align: middle; margin-right: 8px;"></span>
-                <strong>Yellow Day</strong> — Completed 75-99% of tasks
-            </div>
-            <div style="margin-bottom: 12px;">
-                <span style="display: inline-block; width: 20px; height: 20px; background: #ff922b; border-radius: 4px; vertical-align: middle; margin-right: 8px;"></span>
-                <strong>Orange Day</strong> — Completed 50-74% of tasks
-            </div>
-            <div style="margin-bottom: 12px;">
-                <span style="display: inline-block; width: 20px; height: 20px; background: #ff6b6b; border-radius: 4px; vertical-align: middle; margin-right: 8px;"></span>
-                <strong>Red Day</strong> — Completed less than 50% of tasks
-            </div>
-            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); color: var(--text-secondary); font-size: 14px;">
-                💡 <strong>Streak tip:</strong> Green/yellow days count toward your streak. Orange/red days break it!
+            <div class="onboarding-progress" id="onboardingProgress"></div>
+            <div class="onboarding-content" id="onboardingContent"></div>
+            <div class="onboarding-actions">
+                <button class="onboarding-btn secondary" id="onboardingBackBtn" onclick="previousOnboardingSlide()">Back</button>
+                <button class="onboarding-btn primary" id="onboardingNextBtn" onclick="nextOnboardingSlide()">Next</button>
             </div>
         </div>
-        <button onclick="closeColorLegend()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 500; font-size: 15px;">Got it!</button>
     </div>
 
     <script>
@@ -1530,7 +1868,11 @@
             achievements: [],
             notificationsEnabled: false,
             notifiedToday: {}, // { taskId: 'YYYY-MM-DD' } — tracks which tasks have fired today
-            dailyHistory: {}, // { 'YYYY-MM-DD': { completed: X, total: Y, rating: 'green'/'yellow'/'orange'/'red'/'none' } }
+            dailyHistory: {}, // { 'YYYY-MM-DD': { completed: X, total: Y, rating: 'darkgreen'/'green'/'yellow'/'orange'/'red'/'none' } }
+            dailyTaskHistory: {}, // { 'YYYY-MM-DD': [{ id, name, completed, time, icon, recurring }] }
+            easyMode: false,
+            easyModeGraceUsed: false,
+            onboardingCompleted: false,
             darkMode: false,
             scheduleView: 'timeline',
             currentCalendarMonth: new Date().getMonth(),
@@ -1538,10 +1880,40 @@
         };
 
         let currentEditingTaskId = null;
+        let onboardingSlideIndex = 0;
         const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'];
         const DAY_HEADERS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const ONBOARDING_SLIDES = [
+            {
+                kicker: 'Welcome',
+                title: 'Build a day you can actually keep showing up for.',
+                copy: 'ScheduleBuddy turns a routine into something visible, encouraging, and easy to revisit. Add the tasks that matter, check them off through the day, and let the app reflect your momentum back to you.',
+                items: [
+                    ['1', 'Simple by default', 'You can start with just a few repeating tasks and grow from there.'],
+                    ['2', 'Designed for real days', 'Misses, partial wins, and streak recovery are all part of the system.']
+                ]
+            },
+            {
+                kicker: 'How It Works',
+                title: 'Your calendar becomes a readable picture of your consistency.',
+                copy: 'Each day gets a color based on how much of your routine you completed. Over time, your streak, history, and progress make it easier to notice patterns without overthinking them.',
+                items: [
+                    ['DG', 'Dark green', 'A perfect day: every scheduled task got done.'],
+                    ['G', 'Green and beyond', 'The rest of the colors show how close you got, from strong days to reset days.']
+                ]
+            },
+            {
+                kicker: 'Built To Fit You',
+                title: 'Use normal rules, or switch on a softer version when you need it.',
+                copy: 'You can long-press tasks to edit them, add times if you want reminders, and turn on Easy Mode in Settings for more forgiving colors, extra XP, and one protected bad day per streak.',
+                items: [
+                    ['+', 'Quick add', 'Create tasks with optional times, icons, and repeating days.'],
+                    ['E', 'Easy Mode', 'A gentler scoring model for rebuilding rhythm without losing all your progress.']
+                ]
+            }
+        ];
 
         // Achievements Definition
         const achievementDefs = [
@@ -1577,7 +1949,7 @@
                 id: 'greener_grass', 
                 name: 'Greener Grass', 
                 icon: '🌱', 
-                description: 'Get green days (finish all tasks) 10 days in a row',
+                description: 'Get perfect days (finish all tasks) 10 days in a row',
                 condition: () => checkConsecutivePerfectDays(10)
             },
             { 
@@ -1657,6 +2029,7 @@
         // Initialize
         async function init() {
             await loadGameState();
+            ensureGameStateDefaults();
             // Always open calendar to current month, not the saved month
             gameState.currentCalendarMonth = new Date().getMonth();
             gameState.currentCalendarYear = new Date().getFullYear();
@@ -1669,7 +2042,10 @@
             checkNotificationPermission();
             startNotificationPoller();
             startDailyCheckSystem();
+            updateTodayTaskHistory();
+            renderColorLegend();
             renderAll();
+            maybeShowOnboarding();
         }
 
         // Storage functions
@@ -1692,6 +2068,20 @@
             }
         }
 
+        function ensureGameStateDefaults() {
+            gameState.tasks = Array.isArray(gameState.tasks) ? gameState.tasks : [];
+            gameState.achievements = Array.isArray(gameState.achievements) ? gameState.achievements : [];
+            gameState.notifiedToday = gameState.notifiedToday || {};
+            gameState.dailyHistory = gameState.dailyHistory || {};
+            gameState.dailyTaskHistory = gameState.dailyTaskHistory || {};
+            if (typeof gameState.easyMode !== 'boolean') gameState.easyMode = false;
+            if (typeof gameState.easyModeGraceUsed !== 'boolean') gameState.easyModeGraceUsed = false;
+            if (typeof gameState.onboardingCompleted !== 'boolean') gameState.onboardingCompleted = false;
+            if (typeof gameState.notificationsExplicitlyDisabled !== 'boolean') {
+                gameState.notificationsExplicitlyDisabled = false;
+            }
+        }
+
         // Check and update streak
         function checkStreak() {
             const today = new Date().toDateString();
@@ -1703,15 +2093,25 @@
                 if (gameState.lastCheckIn) {
                     const lastDate = new Date(gameState.lastCheckIn);
                     const lastKey = formatDateKey(lastDate);
+                    saveTaskSnapshot(lastKey, getActiveTasksForDate(lastDate));
                     saveDayRating(lastKey);
                 }
                 
                 // Calculate new streak
                 const yesterdayRating = gameState.dailyHistory[yesterdayKey]?.rating;
-                if (yesterdayRating === 'green' || yesterdayRating === 'yellow') {
+                if (isGoodDayRating(yesterdayRating)) {
                     gameState.currentStreak++;
+                } else if (
+                    gameState.easyMode &&
+                    gameState.currentStreak > 0 &&
+                    !gameState.easyModeGraceUsed &&
+                    yesterdayRating &&
+                    yesterdayRating !== 'none'
+                ) {
+                    gameState.easyModeGraceUsed = true;
                 } else if (gameState.lastCheckIn !== null) {
                     gameState.currentStreak = 0;
+                    gameState.easyModeGraceUsed = false;
                 }
                 
                 gameState.bestStreak = Math.max(gameState.bestStreak, gameState.currentStreak);
@@ -1725,6 +2125,8 @@
                     }
                     return task;
                 }).filter(task => task.recurring || !task.completed);
+
+                updateTodayTaskHistory();
                 
                 saveGameState();
             }
@@ -1770,17 +2172,44 @@
             };
         }
 
+        function getCompletionPercentage(completedTasks, totalTasks) {
+            if (totalTasks === 0) return 0;
+            return (completedTasks / totalTasks) * 100;
+        }
+
+        function isPerfectDayRating(rating) {
+            return rating === 'darkgreen';
+        }
+
+        function isGoodDayRating(rating) {
+            if (gameState.easyMode) {
+                return rating === 'darkgreen' || rating === 'green';
+            }
+            return rating === 'darkgreen' || rating === 'green' || rating === 'yellow';
+        }
+
         function getDayRating(completedTasks, totalTasks) {
             if (totalTasks === 0) return 'none';
-            const percentage = completedTasks / totalTasks;
-            if (percentage === 1) return 'green';
-            if (percentage >= 0.75) return 'yellow';
-            if (percentage >= 0.5) return 'orange';
+            const percentage = getCompletionPercentage(completedTasks, totalTasks);
+
+            if (gameState.easyMode) {
+                if (percentage === 100) return 'darkgreen';
+                if (percentage >= 50) return 'green';
+                if (percentage >= 11) return 'yellow';
+                if (percentage >= 1) return 'orange';
+                return 'red';
+            }
+
+            if (percentage === 100) return 'darkgreen';
+            if (percentage >= 75) return 'green';
+            if (percentage >= 50) return 'yellow';
+            if (percentage >= 1) return 'orange';
             return 'red';
         }
 
         function getRatingEmoji(rating) {
-            if (rating === 'green') return '🟩';
+            if (rating === 'darkgreen') return '🟩';
+            if (rating === 'green') return '🟢';
             if (rating === 'yellow') return '🟨';
             if (rating === 'orange') return '🟧';
             if (rating === 'red') return '🟥';
@@ -1809,6 +2238,43 @@
             return getRatingEmoji(dayData.rating);
         }
 
+        function saveTaskSnapshot(dateKey, tasks) {
+            gameState.dailyTaskHistory[dateKey] = tasks.map(task => ({
+                id: task.id,
+                name: task.name,
+                completed: !!task.completed,
+                time: task.time || null,
+                icon: task.icon || null,
+                recurring: !!task.recurring
+            }));
+        }
+
+        function updateTodayTaskHistory() {
+            saveTaskSnapshot(formatDateKey(new Date()), getActiveTasksForDate());
+        }
+
+        function getTasksForDateKey(dateKey) {
+            const todayKey = formatDateKey(new Date());
+            if (dateKey === todayKey) {
+                return getActiveTasksForDate().map(task => ({
+                    id: task.id,
+                    name: task.name,
+                    completed: !!task.completed,
+                    time: task.time || null,
+                    icon: task.icon || null,
+                    recurring: !!task.recurring
+                }));
+            }
+            return gameState.dailyTaskHistory[dateKey] || [];
+        }
+
+        function formatDisplayTime(timeStr) {
+            const [h, m] = timeStr.split(':').map(Number);
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            const h12 = h % 12 || 12;
+            return m === 0 ? `${h12} ${ampm}` : `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+        }
+
         function saveDayRating(dateKey, completedTasks = gameState.completedToday) {
             const recurringTasks = getRecurringTasksForDate(parseDateKey(dateKey));
             const totalTasks = recurringTasks.length;
@@ -1826,10 +2292,14 @@
         function toggleAddTask() {
             document.getElementById('taskModal').classList.add('show');
             document.getElementById('overlay').classList.add('show');
-            document.getElementById('modalTaskName').focus();
-            // reset icon trigger to default
+            document.getElementById('modalRecurring').checked = true;
+            document.getElementById('modalDaySelector').classList.add('visible');
+            resetDayPills('modal');
+            document.getElementById('modalNotification').checked = false;
+            document.getElementById('modalTime').value = '';
+            updateNotificationVisibility('modal');
             const trigger = document.getElementById('modalIconTrigger');
-            trigger.textContent = '⭐';
+            trigger.textContent = '✕';
             trigger.dataset.iconId = '';
         }
 
@@ -1837,6 +2307,15 @@
             const checkbox = document.getElementById(prefix === 'modal' ? 'modalRecurring' : 'editRecurring');
             const selector = document.getElementById(prefix === 'modal' ? 'modalDaySelector' : 'editDaySelector');
             selector.classList.toggle('visible', checkbox.checked);
+        }
+
+        function updateNotificationVisibility(prefix) {
+            const timeInput = document.getElementById(prefix === 'modal' ? 'modalTime' : 'editTime');
+            const notificationGroup = document.getElementById(prefix === 'modal' ? 'modalNotificationGroup' : 'editNotificationGroup');
+            const notificationCheckbox = document.getElementById(prefix === 'modal' ? 'modalNotification' : 'editNotification');
+            const hasTime = !!timeInput.value;
+            notificationGroup.classList.toggle('hidden', !hasTime);
+            if (!hasTime) notificationCheckbox.checked = false;
         }
 
         function toggleDayPill(pill, prefix) {
@@ -1872,6 +2351,7 @@
             resetDayPills('modal');
             document.getElementById('modalNotification').checked = false;
             document.getElementById('modalTime').value = '';
+            updateNotificationVisibility('modal');
         }
 
         function saveTask() {
@@ -1893,12 +2373,14 @@
                 completed: false,
                 recurring: recurring,
                 days: recurring ? getSelectedDays('modal') : [0,1,2,3,4,5,6],
-                notification: notification,
+                notification: time ? notification : false,
                 time: time || null,
                 icon: getIconFromTrigger('modal')
             };
             
             gameState.tasks.push(task);
+            updateTodayTaskHistory();
+            saveDayRating(formatDateKey(new Date()));
             
             closeTaskModal();
             saveGameState();
@@ -1917,6 +2399,7 @@
             setDayPills('edit', task.days || [0,1,2,3,4,5,6]);
             document.getElementById('editNotification').checked = task.notification || false;
             document.getElementById('editTime').value = task.time || '';
+            updateNotificationVisibility('edit');
             // set icon trigger
             const editTrigger = document.getElementById('editIconTrigger');
             if (task.icon && task.icon.startsWith('custom:')) {
@@ -1926,7 +2409,7 @@
                 editTrigger.textContent = ICON_LIBRARY[task.icon].emoji;
                 editTrigger.dataset.iconId = task.icon;
             } else {
-                editTrigger.textContent = '⭐';
+                editTrigger.textContent = '✕';
                 editTrigger.dataset.iconId = '';
             }
             
@@ -1937,6 +2420,7 @@
         function closeEditTaskModal() {
             document.getElementById('editTaskModal').classList.remove('show');
             document.getElementById('overlay').classList.remove('show');
+            updateNotificationVisibility('edit');
             currentEditingTaskId = null;
         }
 
@@ -1962,9 +2446,11 @@
             task.name = taskName;
             task.recurring = recurring;
             task.days = recurring ? getSelectedDays('edit') : [0,1,2,3,4,5,6];
-            task.notification = notification;
+            task.notification = time ? notification : false;
             task.time = time || null;
             task.icon = getIconFromTrigger('edit');
+            updateTodayTaskHistory();
+            saveDayRating(formatDateKey(new Date()));
             
             closeEditTaskModal();
             saveGameState();
@@ -2002,38 +2488,48 @@
 
         function getTaskXP() {
             const recurringCount = gameState.tasks.filter(t => t.recurring).length;
-            if (recurringCount <= 3) return 45;
-            if (recurringCount <= 6) return 25;
-            if (recurringCount <= 8) return 17;
-            if (recurringCount <= 10) return 13;
-            return 10;
+            let baseXP = 10;
+            if (recurringCount <= 3) baseXP = 45;
+            else if (recurringCount <= 6) baseXP = 25;
+            else if (recurringCount <= 8) baseXP = 17;
+            else if (recurringCount <= 10) baseXP = 13;
+            return gameState.easyMode ? Math.round(baseXP * 1.5) : baseXP;
         }
 
         function toggleTask(taskId) {
             const task = gameState.tasks.find(t => t.id === taskId);
-            if (task && !task.completed) {
-                task.completed = true;
+            if (!task) return;
+
+            const xp = getTaskXP();
+            task.completed = !task.completed;
+
+            if (task.completed) {
                 gameState.completedToday++;
                 gameState.totalCompleted++;
-                const xp = getTaskXP();
                 addXP(xp);
                 checkAchievements();
                 showCelebration('Task Complete! 🎯', `+${xp} XP`);
-                
-                // Update today's calendar color in real-time
-                const todayKey = formatDateKey(new Date());
-                saveDayRating(todayKey);
-                
-                saveGameState();
-                renderHeader();
-                renderCalendar();
-                renderTasks();
+            } else {
+                gameState.completedToday = Math.max(0, gameState.completedToday - 1);
+                gameState.totalCompleted = Math.max(0, gameState.totalCompleted - 1);
+                gameState.totalPoints = Math.max(0, gameState.totalPoints - xp);
+                subtractXP(xp);
             }
+
+            const todayKey = formatDateKey(new Date());
+            updateTodayTaskHistory();
+            saveDayRating(todayKey);
+            
+            saveGameState();
+            renderHeader();
+            renderCalendar();
+            renderTasks();
         }
 
         function deleteTask(taskId) {
             gameState.tasks = gameState.tasks.filter(t => t.id !== taskId);
             const todayKey = formatDateKey(new Date());
+            updateTodayTaskHistory();
             saveDayRating(todayKey);
             saveGameState();
             renderAll();
@@ -2105,7 +2601,7 @@
             document.getElementById('progressFill').style.width = `${Math.min(progress, 100)}%`;
             
             // Calculate total green days
-            const greenDays = Object.values(gameState.dailyHistory).filter(day => day.rating === 'green').length;
+            const greenDays = Object.values(gameState.dailyHistory).filter(day => isPerfectDayRating(day.rating)).length;
             document.getElementById('totalGreenDays').textContent = greenDays;
             
             document.getElementById('currentStreak').textContent = gameState.currentStreak;
@@ -2120,31 +2616,19 @@
         // ── Icon library ─────────────────────────────────────────────
         const ICON_LIBRARY = {
             meal:      { label: 'Meal',      emoji: '🍽️' },
-            coffee:    { label: 'Coffee',    emoji: '☕' },
             water:     { label: 'Water',     emoji: '💧' },
             exercise:  { label: 'Exercise',  emoji: '🏋️' },
             walk:      { label: 'Walk',      emoji: '🚶' },
-            stretch:   { label: 'Stretch',   emoji: '🧘' },
-            meditate:  { label: 'Meditate',  emoji: '🧠' },
+            meditate:  { label: 'Meditate',  emoji: '🧘' },
             study:     { label: 'Study',     emoji: '📚' },
             work:      { label: 'Work',      emoji: '💼' },
             journal:   { label: 'Journal',   emoji: '✏️' },
-            hygiene:   { label: 'Hygiene',   emoji: '🪥' },
             shower:    { label: 'Shower',    emoji: '🚿' },
             chores:    { label: 'Chores',    emoji: '🧹' },
-            pet:       { label: 'Pet',       emoji: '🐾' },
-            morning:   { label: 'Morning',   emoji: '🌅' },
             evening:   { label: 'Evening',   emoji: '🌙' },
-            sleep:     { label: 'Sleep',     emoji: '😴' },
             meds:      { label: 'Meds',      emoji: '💊' },
             skincare:  { label: 'Skincare',  emoji: '🧴' },
-            music:     { label: 'Music',     emoji: '🎵' },
-            read:      { label: 'Read',      emoji: '📖' },
-            phone:     { label: 'Phone',     emoji: '📱' },
-            cook:      { label: 'Cook',      emoji: '🍳' },
             clean:     { label: 'Clean',     emoji: '✨' },
-            journal2:  { label: 'Journal',   emoji: '📓' },
-            burger:    { label: 'Burger',    emoji: '🍔' },
             shake:     { label: 'Protein',   emoji: '🥤' },
         };
 
@@ -2153,7 +2637,7 @@
                 if (task.icon.startsWith('custom:')) return task.icon.slice(7);
                 if (ICON_LIBRARY[task.icon]) return ICON_LIBRARY[task.icon].emoji;
             }
-            return task.recurring ? '🔄' : '⭐';
+            return task.recurring ? '↺' : '○';
         }
 
         // ── Icon popup ───────────────────────────────────────────────
@@ -2177,20 +2661,6 @@
                          title="${label}">${emoji}</button>`
             ).join('');
 
-            // Custom emoji row
-            const currentCustom = (iconPopupSelected && iconPopupSelected.startsWith('custom:'))
-                ? iconPopupSelected.slice(7) : '';
-            html += `<div style="grid-column: 1 / -1; margin-top: 8px; display: flex; gap: 8px; align-items: center;">
-                <input type="text" id="customEmojiInput" placeholder="Paste an emoji"
-                    value="${currentCustom}"
-                    style="flex:1; padding: 10px 12px; border-radius: 10px; border: 2px solid var(--border-color);
-                           background: var(--input-bg); color: var(--text-primary); font-size: 20px; text-align:center;
-                           outline:none;" />
-                <button onclick="iconPopupPickCustom()"
-                    style="padding: 10px 14px; border-radius: 10px; border: none; background: #667eea; color: #fff;
-                           font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap;">Use</button>
-            </div>`;
-
             grid.innerHTML = html;
 
             document.getElementById('iconPopupOverlay').classList.add('show');
@@ -2210,26 +2680,9 @@
                 trigger.textContent = ICON_LIBRARY[id].emoji;
                 trigger.dataset.iconId = id;
             } else {
-                trigger.textContent = '⭐';
+                trigger.textContent = '✕';
                 trigger.dataset.iconId = '';
             }
-
-            closeIconPopup();
-        }
-
-        function iconPopupPickCustom() {
-            const input = document.getElementById('customEmojiInput');
-            const val = input.value.trim();
-            if (!val) return;
-
-            // Take only the first grapheme (emoji) if they pasted multiple characters
-            const emoji = [...val][0];
-            const id = 'custom:' + emoji;
-            iconPopupSelected = id;
-
-            const trigger = document.getElementById(iconPopupSource + 'IconTrigger');
-            trigger.textContent = emoji;
-            trigger.dataset.iconId = id;
 
             closeIconPopup();
         }
@@ -2326,6 +2779,7 @@
                 });
                 el.addEventListener('mouseup',   () => clearTimeout(pressTimer));
                 el.addEventListener('mouseleave',() => clearTimeout(pressTimer));
+                el.addEventListener('selectstart', (e) => e.preventDefault());
             }
 
             const view = gameState.scheduleView || 'timeline';
@@ -2339,7 +2793,7 @@
                 timeline.innerHTML = allSorted.map(task => `
                     <div class="task-item ${task.completed ? 'completed' : ''}" data-task-id="${task.id}">
                         <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''}
-                               onchange="toggleTask(${task.id})" ${task.completed ? 'disabled' : ''}>
+                               onchange="toggleTask(${task.id})">
                         <div class="task-content">
                             <div class="task-name">
                                 ${task.name}
@@ -2490,6 +2944,7 @@
         }
 
         function showColorLegend() {
+            renderColorLegend();
             document.getElementById('colorLegendModal').classList.add('show');
             document.getElementById('overlay').classList.add('show');
         }
@@ -2497,6 +2952,158 @@
         function closeColorLegend() {
             document.getElementById('colorLegendModal').classList.remove('show');
             document.getElementById('overlay').classList.remove('show');
+        }
+
+        function renderColorLegend() {
+            const legend = document.getElementById('colorLegendContent');
+            if (!legend) return;
+
+            const rows = gameState.easyMode ? [
+                ['var(--day-dark-green)', 'Dark Green Day', 'Completed all tasks (100%)'],
+                ['var(--day-green)', 'Green Day', 'Completed 50-99% of tasks'],
+                ['var(--day-yellow)', 'Yellow Day', 'Completed 11-49% of tasks'],
+                ['var(--day-orange)', 'Orange Day', 'Completed 1-10% of tasks'],
+                ['var(--day-red)', 'Red Day', 'Completed 0% of tasks']
+            ] : [
+                ['var(--day-dark-green)', 'Dark Green Day', 'Completed all tasks (100%)'],
+                ['var(--day-green)', 'Green Day', 'Completed 75-99% of tasks'],
+                ['var(--day-yellow)', 'Yellow Day', 'Completed 50-74% of tasks'],
+                ['var(--day-orange)', 'Orange Day', 'Completed 1-49% of tasks'],
+                ['var(--day-red)', 'Red Day', 'Completed 0% of tasks']
+            ];
+
+            const streakTip = gameState.easyMode
+                ? 'Dark green and green days count toward your streak. Easy Mode also forgives one bad day per streak.'
+                : 'Dark green, green, and yellow days count toward your streak. Orange and red days break it.';
+
+            legend.innerHTML = `${rows.map(([color, label, description]) => `
+                <div style="margin-bottom: 12px;">
+                    <span style="display: inline-block; width: 20px; height: 20px; background: ${color}; border-radius: 4px; vertical-align: middle; margin-right: 8px;"></span>
+                    <strong>${label}</strong> — ${description}
+                </div>
+            `).join('')}
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); color: var(--text-secondary); font-size: 14px;">
+                <strong>Streak tip:</strong> ${streakTip}
+            </div>`;
+        }
+
+        function recalculateDailyHistoryRatings() {
+            Object.keys(gameState.dailyHistory).forEach(dateKey => {
+                const day = gameState.dailyHistory[dateKey];
+                const total = day?.total || 0;
+                const completed = day?.completed || 0;
+                gameState.dailyHistory[dateKey] = {
+                    ...day,
+                    completed,
+                    total,
+                    rating: total === 0 ? 'none' : getDayRating(completed, total)
+                };
+            });
+        }
+
+        function recomputeStreakStats() {
+            const dates = Object.keys(gameState.dailyHistory).sort();
+            let streak = 0;
+            let best = 0;
+            let graceUsed = false;
+
+            dates.forEach(dateKey => {
+                const rating = gameState.dailyHistory[dateKey]?.rating;
+                if (!rating || rating === 'none') {
+                    streak = 0;
+                    graceUsed = false;
+                    return;
+                }
+
+                if (isGoodDayRating(rating)) {
+                    streak++;
+                } else if (gameState.easyMode && streak > 0 && !graceUsed) {
+                    graceUsed = true;
+                } else {
+                    streak = 0;
+                    graceUsed = false;
+                }
+
+                best = Math.max(best, streak);
+            });
+
+            gameState.currentStreak = streak;
+            gameState.bestStreak = best;
+            gameState.easyModeGraceUsed = graceUsed && streak > 0;
+        }
+
+        function toggleEasyMode() {
+            gameState.easyMode = !gameState.easyMode;
+            recalculateDailyHistoryRatings();
+            saveDayRating(formatDateKey(new Date()));
+            recomputeStreakStats();
+            renderColorLegend();
+            checkAchievements();
+            saveGameState();
+            renderAll();
+        }
+
+        function renderOnboarding() {
+            const onboarding = document.getElementById('onboarding');
+            const content = document.getElementById('onboardingContent');
+            const progress = document.getElementById('onboardingProgress');
+            const backBtn = document.getElementById('onboardingBackBtn');
+            const nextBtn = document.getElementById('onboardingNextBtn');
+            if (!onboarding || !content || !progress || !backBtn || !nextBtn) return;
+
+            const slide = ONBOARDING_SLIDES[onboardingSlideIndex];
+            progress.innerHTML = ONBOARDING_SLIDES.map((_, index) =>
+                `<div class="onboarding-dot ${index === onboardingSlideIndex ? 'active' : ''}"></div>`
+            ).join('');
+            content.innerHTML = `
+                <div class="onboarding-kicker">${slide.kicker}</div>
+                <div class="onboarding-title">${slide.title}</div>
+                <div class="onboarding-copy">${slide.copy}</div>
+                <div class="onboarding-panel">
+                    <div class="onboarding-list">
+                        ${slide.items.map(([icon, title, copy]) => `
+                            <div class="onboarding-item">
+                                <div class="onboarding-item-icon">${icon}</div>
+                                <div>
+                                    <div class="onboarding-item-title">${title}</div>
+                                    <div class="onboarding-item-copy">${copy}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            backBtn.style.visibility = onboardingSlideIndex === 0 ? 'hidden' : 'visible';
+            nextBtn.textContent = onboardingSlideIndex === ONBOARDING_SLIDES.length - 1 ? 'Get Started' : 'Next';
+            onboarding.classList.add('show');
+        }
+
+        function nextOnboardingSlide() {
+            if (onboardingSlideIndex >= ONBOARDING_SLIDES.length - 1) {
+                completeOnboarding();
+                return;
+            }
+            onboardingSlideIndex++;
+            renderOnboarding();
+        }
+
+        function previousOnboardingSlide() {
+            if (onboardingSlideIndex === 0) return;
+            onboardingSlideIndex--;
+            renderOnboarding();
+        }
+
+        function completeOnboarding() {
+            gameState.onboardingCompleted = true;
+            saveGameState();
+            document.getElementById('onboarding').classList.remove('show');
+        }
+
+        function maybeShowOnboarding() {
+            if (gameState.onboardingCompleted) return;
+            onboardingSlideIndex = 0;
+            renderOnboarding();
         }
 
         function renderCalendar() {
@@ -2527,18 +3134,25 @@
                 const date = new Date(year, month, day);
                 const dateKey = formatDateKey(date);
                 const dayData = gameState.dailyHistory[dateKey];
+                const hasTaskDetails = getTasksForDateKey(dateKey).length > 0;
                 
                 let className = 'calendar-day';
                 let onClick = '';
                 
                 if (dateKey === todayKey) {
                     className += ' today';
+                    onClick = `onclick="showDayPopup('${dateKey}')"`;
                 } else if (date > today) {
                     className += ' future';
                 } else if (!dayData || dayData.rating === 'none') {
                     className += ' no-tasks';
+                    onClick = `onclick="showDayPopup('${dateKey}')"`;
                 } else {
                     className += ` ${dayData.rating}`;
+                    onClick = `onclick="showDayPopup('${dateKey}')"`;
+                }
+
+                if (!hasTaskDetails && !dayData && date <= today) {
                     onClick = `onclick="showDayPopup('${dateKey}')"`;
                 }
                 
@@ -2550,16 +3164,37 @@
 
         function showDayPopup(dateKey) {
             const dayData = gameState.dailyHistory[dateKey];
-            if (!dayData || dayData.rating === 'none') return;
-            
-            // Parse dateKey manually to avoid timezone issues
-            // dateKey format: "YYYY-MM-DD"
             const date = parseDateKey(dateKey);
             const dateStr = `${MONTH_NAMES[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+            const taskEntries = getTasksForDateKey(dateKey).sort((a, b) => {
+                if (!a.time && !b.time) return a.name.localeCompare(b.name);
+                if (!a.time) return 1;
+                if (!b.time) return -1;
+                return a.time.localeCompare(b.time);
+            });
+            const completedCount = taskEntries.filter(task => task.completed).length;
+            const statsText = taskEntries.length
+                ? `Completed ${completedCount} out of ${taskEntries.length} tasks`
+                : dayData && dayData.rating !== 'none'
+                    ? `Completed ${dayData.completed} out of ${dayData.total} tasks`
+                    : 'No tasks were scheduled for this day.';
+            const content = taskEntries.length
+                ? `<div class="day-popup-task-list">${taskEntries.map(task => `
+                    <div class="day-popup-task ${task.completed ? 'done' : 'missed'}">
+                        <div>
+                            <div class="day-popup-task-name">${task.icon && task.icon.startsWith('custom:') ? `${task.icon.slice(7)} ` : task.icon && ICON_LIBRARY[task.icon] ? `${ICON_LIBRARY[task.icon].emoji} ` : ''}${task.name}</div>
+                            <div class="day-popup-task-meta">${task.time ? formatDisplayTime(task.time) : 'No set time'}${task.recurring ? ' • Repeating' : ''}</div>
+                        </div>
+                        <div class="day-popup-task-status">${task.completed ? 'Done' : 'Missed'}</div>
+                    </div>
+                `).join('')}</div>`
+                : dayData && dayData.rating !== 'none'
+                    ? '<div class="day-popup-empty">Detailed task history is only available for dates saved after this update.</div>'
+                    : '<div class="day-popup-empty">No tasks were scheduled for this day.</div>';
             
             document.getElementById('dayPopupDate').textContent = dateStr;
-            document.getElementById('dayPopupStats').textContent = 
-                `Completed ${dayData.completed} out of ${dayData.total} tasks`;
+            document.getElementById('dayPopupStats').textContent = statsText;
+            document.getElementById('dayPopupContent').innerHTML = content;
             
             document.getElementById('dayPopup').classList.add('show');
             document.getElementById('overlay').classList.add('show');
@@ -2616,6 +3251,8 @@
                 document.body.classList.remove('dark-mode');
                 document.getElementById('darkModeToggle').checked = false;
             }
+            const easyModeToggle = document.getElementById('easyModeToggle');
+            if (easyModeToggle) easyModeToggle.checked = !!gameState.easyMode;
         }
 
         // Daily Check System - Penalizes missed recurring tasks at midnight
@@ -2661,7 +3298,7 @@
             
             for (let i = dates.length - 1; i >= 0; i--) {
                 const rating = gameState.dailyHistory[dates[i]].rating;
-                if (rating === 'green' || rating === 'yellow') {
+                if (isGoodDayRating(rating)) {
                     consecutive++;
                     if (consecutive >= days) return true;
                 } else if (rating !== 'none') {
@@ -2678,7 +3315,7 @@
             
             for (let i = dates.length - 1; i >= 0; i--) {
                 const rating = gameState.dailyHistory[dates[i]].rating;
-                if (rating === 'green') {
+                if (isPerfectDayRating(rating)) {
                     consecutive++;
                     if (consecutive >= days) return true;
                 } else {
@@ -2707,8 +3344,8 @@
                 
                 // Must have data for every day of the month
                 if (monthDays.length === daysInMonth) {
-                    // All must be green and none can be 'none'
-                    if (monthDays.every(day => day.rating === 'green')) {
+                    // All must be perfect days and none can be 'none'
+                    if (monthDays.every(day => isPerfectDayRating(day.rating))) {
                         return true;
                     }
                 }
@@ -2858,7 +3495,11 @@
                     // Validate the data has the required fields
                     if (importedData.level !== undefined && importedData.tasks !== undefined) {
                         gameState = importedData;
+                        ensureGameStateDefaults();
+                        recalculateDailyHistoryRatings();
+                        recomputeStreakStats();
                         await saveGameState();
+                        applyDarkMode();
                         renderAll();
                         showCelebration('Data Restored! 📥', 'Your progress has been restored successfully.');
                     } else {
@@ -2921,6 +3562,17 @@
                     }
                 });
             }
+
+            const modalTime = document.getElementById('modalTime');
+            const editTime = document.getElementById('editTime');
+            if (modalTime) {
+                modalTime.addEventListener('input', () => updateNotificationVisibility('modal'));
+                modalTime.addEventListener('change', () => updateNotificationVisibility('modal'));
+            }
+            if (editTime) {
+                editTime.addEventListener('input', () => updateNotificationVisibility('edit'));
+                editTime.addEventListener('change', () => updateNotificationVisibility('edit'));
+            }
             
             // Close modals when clicking overlay
             document.getElementById('overlay').addEventListener('click', () => {
@@ -2928,8 +3580,10 @@
                 closeCelebration();
                 closeDayPopup();
                 closeAchievementPopup();
+                closeColorLegend();
                 closeDeleteConfirm();
                 closeEditTaskModal();
+                closeClearDataConfirm();
             });
         });
 
@@ -3021,13 +3675,13 @@ Best Streak: ${gameState.bestStreak} Days`;
                     if (totalTasks > 0 && gameState.completedToday === totalTasks) {
                         perfectDaysThisMonth++;
                     }
-                } else if (dayData && dayData.rating === 'green') {
+                } else if (dayData && isPerfectDayRating(dayData.rating)) {
                     perfectDaysThisMonth++;
                 }
             }
             
             // Calculate total perfect days
-            const totalPerfectDays = Object.values(gameState.dailyHistory).filter(day => day.rating === 'green').length;
+            const totalPerfectDays = Object.values(gameState.dailyHistory).filter(day => isPerfectDayRating(day.rating)).length;
             // Add today if it's perfect
             const totalTasks = getRecurringTasksForDate(today).length;
             const todayIsPerfect = totalTasks > 0 && gameState.completedToday === totalTasks;
