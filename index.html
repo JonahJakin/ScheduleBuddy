@@ -68,57 +68,57 @@
         }
 
         body.professional-mode {
-            --bg-gradient-start: #e5e8ee;
-            --bg-gradient-end: #e5e8ee;
-            --card-bg: #fbfaf8;
-            --text-primary: #30363a;
-            --text-secondary: #5e686e;
-            --text-tertiary: #7c868c;
-            --border-color: #d9d5cf;
-            --input-bg: #f3f0eb;
-            --completed-bg: #ecefea;
-            --day-dark-green: #4f6658;
-            --day-green: #72897a;
-            --day-yellow: #b4aa79;
-            --day-orange: #a98b72;
-            --day-red: #8d6b6b;
-            --onboarding-accent: #425b66;
-            --onboarding-sand: rgba(250,248,244,0.88);
-            --accent-primary: #5f7480;
-            --accent-secondary: #72897a;
-            --accent-danger: #8d6b6b;
+            --bg-gradient-start: #ece9e2;
+            --bg-gradient-end: #ece9e2;
+            --card-bg: #fcfbf7;
+            --text-primary: #2f3335;
+            --text-secondary: #67645f;
+            --text-tertiary: #8a877f;
+            --border-color: #d7d0c5;
+            --input-bg: #f5f0e8;
+            --completed-bg: #eef2eb;
+            --day-dark-green: #55705b;
+            --day-green: #759177;
+            --day-yellow: #b79d64;
+            --day-orange: #b88361;
+            --day-red: #a3736d;
+            --onboarding-accent: #5b6f86;
+            --onboarding-sand: rgba(251,249,244,0.9);
+            --accent-primary: #74879c;
+            --accent-secondary: #7e9682;
+            --accent-danger: #a67a76;
         }
 
         body.dark-mode.professional-mode {
-            --bg-gradient-start: #1b2228;
-            --bg-gradient-end: #1b2228;
-            --card-bg: #1a2022;
-            --text-primary: #e2e7e6;
-            --text-secondary: #a6b0af;
-            --text-tertiary: #798282;
-            --border-color: #2a3234;
-            --input-bg: #111719;
-            --completed-bg: #1a211f;
-            --day-dark-green: #5b7a67;
-            --day-green: #75907b;
-            --day-yellow: #b39f68;
-            --day-orange: #9f7960;
-            --day-red: #8f6666;
-            --onboarding-accent: #90a4ab;
-            --onboarding-sand: rgba(22, 27, 29, 0.92);
-            --accent-primary: #8ea3aa;
-            --accent-secondary: #748b79;
-            --accent-danger: #997070;
+            --bg-gradient-start: #222624;
+            --bg-gradient-end: #222624;
+            --card-bg: #2c312f;
+            --text-primary: #e6e6e1;
+            --text-secondary: #bdb8b0;
+            --text-tertiary: #928d85;
+            --border-color: #414541;
+            --input-bg: #1d211f;
+            --completed-bg: #252a26;
+            --day-dark-green: #637f68;
+            --day-green: #829b82;
+            --day-yellow: #b8a56f;
+            --day-orange: #aa8266;
+            --day-red: #9a706d;
+            --onboarding-accent: #b0bac2;
+            --onboarding-sand: rgba(34, 38, 36, 0.92);
+            --accent-primary: #9ab0c4;
+            --accent-secondary: #8fa98f;
+            --accent-danger: #b28884;
         }
 
         body.professional-mode .task-recurring {
-            background: rgba(95, 116, 128, 0.1);
-            color: #4b616c;
+            background: rgba(116, 135, 156, 0.1);
+            color: #5d6f82;
         }
 
         body.dark-mode.professional-mode .task-recurring {
-            background: rgba(142, 163, 170, 0.14);
-            color: #b2c1c6;
+            background: rgba(154, 176, 196, 0.16);
+            color: #c6d1d8;
         }
 
         body {
@@ -261,10 +261,16 @@
             color: white;
             border: none;
             padding: 10px 18px;
+            min-height: 40px;
             border-radius: 10px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
+            line-height: 1.2;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
             transition: all 0.2s ease;
             letter-spacing: 0.3px;
         }
@@ -366,7 +372,7 @@
         }
         .icon-field label {
             align-self: flex-start;
-            color: var(--text-primary);
+            color: var(--text-secondary);
             font-size: 14px;
         }
         .icon-trigger {
@@ -1099,11 +1105,17 @@
         .backup-section button {
             width: 100%;
             padding: 12px;
+            min-height: 46px;
             margin-bottom: 10px;
             border: none;
             border-radius: 12px;
             cursor: pointer;
             font-weight: 500;
+            line-height: 1.2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
         }
 
         .backup-export {
@@ -1516,6 +1528,11 @@
             pointer-events: auto;
         }
 
+        .onboarding.exiting {
+            opacity: 0;
+            transition: opacity 0.42s ease;
+        }
+
         body.dark-mode .onboarding {
             background:
                 radial-gradient(circle at top left, rgba(136, 155, 255, 0.2), transparent 30%),
@@ -1550,6 +1567,23 @@
             animation: modalRise 0.34s ease;
             display: flex;
             flex-direction: column;
+        }
+
+        .onboarding.exiting .onboarding-shell {
+            animation: onboardingDissolve 0.42s cubic-bezier(.22,.61,.36,1) forwards;
+        }
+
+        @keyframes onboardingDissolve {
+            0% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0px);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.06) translateY(-18px);
+                filter: blur(16px);
+            }
         }
 
         .onboarding-header {
@@ -1599,6 +1633,44 @@
             flex: 1;
             display: grid;
             grid-template-rows: auto auto 132px minmax(0, 1fr);
+        }
+
+        .onboarding-slide {
+            display: contents;
+        }
+
+        .onboarding-slide.next {
+            animation: onboardingSlideNext 0.34s cubic-bezier(.22,.61,.36,1);
+        }
+
+        .onboarding-slide.prev {
+            animation: onboardingSlidePrev 0.34s cubic-bezier(.22,.61,.36,1);
+        }
+
+        @keyframes onboardingSlideNext {
+            0% {
+                opacity: 0;
+                transform: translateX(22px);
+                filter: blur(6px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+                filter: blur(0);
+            }
+        }
+
+        @keyframes onboardingSlidePrev {
+            0% {
+                opacity: 0;
+                transform: translateX(-22px);
+                filter: blur(6px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+                filter: blur(0);
+            }
         }
 
         .onboarding-kicker {
@@ -1704,8 +1776,89 @@
             box-shadow: 0 10px 22px rgba(102, 126, 234, 0.22);
         }
 
+        body.professional-mode .level-badge {
+            background: linear-gradient(135deg, #73a0cb, #77b5aa);
+            box-shadow: 0 4px 12px rgba(115, 160, 203, 0.28);
+        }
+
+        body.dark-mode.professional-mode .level-badge {
+            background: linear-gradient(135deg, #a2c0df, #9ebbb0);
+            box-shadow: 0 4px 12px rgba(162, 192, 223, 0.22);
+        }
+
+        body.professional-mode .progress-fill {
+            background: linear-gradient(90deg, #73a0cb, #77b5aa);
+        }
+
+        body.dark-mode.professional-mode .progress-fill {
+            background: linear-gradient(90deg, #a2c0df, #9ebbb0);
+        }
+
         body.professional-mode .settings-button {
             color: var(--accent-primary);
+        }
+
+        body.professional-mode .add-button,
+        body.professional-mode .achievement-popup button,
+        body.professional-mode .day-popup button,
+        body.professional-mode .celebration button,
+        body.professional-mode .btn-primary,
+        body.professional-mode #colorLegendCloseBtn {
+            background: #6c7fa0 !important;
+        }
+
+        body.professional-mode .calendar-nav {
+            background: #8e9189;
+        }
+
+        body.dark-mode.professional-mode .calendar-nav {
+            background: #8d9992;
+        }
+
+        body.professional-mode #shareStreakBtn,
+        body.professional-mode #shareMonthBtn,
+        body.professional-mode .backup-export,
+        body.professional-mode #notificationToggleBtn {
+            background: #7e967f !important;
+        }
+
+        body.professional-mode .backup-import {
+            background: #6c7fa0 !important;
+        }
+
+        body.dark-mode.professional-mode .add-button,
+        body.dark-mode.professional-mode .achievement-popup button,
+        body.dark-mode.professional-mode .day-popup button,
+        body.dark-mode.professional-mode .celebration button,
+        body.dark-mode.professional-mode .btn-primary,
+        body.dark-mode.professional-mode #colorLegendCloseBtn {
+            background: #7e95b0 !important;
+        }
+
+        body.dark-mode.professional-mode #shareStreakBtn,
+        body.dark-mode.professional-mode #shareMonthBtn,
+        body.dark-mode.professional-mode .backup-export,
+        body.dark-mode.professional-mode #notificationToggleBtn {
+            background: #86a286 !important;
+        }
+
+        body.dark-mode.professional-mode .backup-import {
+            background: #7e95b0 !important;
+        }
+
+        body.professional-mode #clearDataBtn,
+        body.professional-mode .btn-primary[style*="#ff6b6b"] {
+            background: #a57a77 !important;
+        }
+
+        body.professional-mode #notificationToggleBtn[style*="#e03131"] {
+            background: #a57a77 !important;
+        }
+
+        body.dark-mode.professional-mode #clearDataBtn,
+        body.dark-mode.professional-mode .btn-primary[style*="#ff6b6b"],
+        body.dark-mode.professional-mode #notificationToggleBtn[style*="#e03131"] {
+            background: #b18782 !important;
         }
 
         body.professional-mode .timeline-circle,
@@ -1729,11 +1882,11 @@
         }
 
         body.professional-mode .timeline-pill.completed {
-            background: rgba(95, 116, 128, 0.35);
+            background: rgba(116, 135, 156, 0.34);
         }
 
         body.dark-mode.professional-mode .timeline-pill.completed {
-            background: rgba(142, 163, 170, 0.35);
+            background: rgba(145, 162, 177, 0.34);
         }
 
         body.professional-mode .task-checkbox,
@@ -1743,7 +1896,7 @@
 
         body.professional-mode .view-sel-btn.active,
         body.professional-mode .icon-popup-btn.selected {
-            background: rgba(95, 116, 128, 0.12);
+            background: rgba(116, 135, 156, 0.12);
             color: var(--accent-primary);
         }
 
@@ -1751,12 +1904,23 @@
             border-color: var(--accent-primary);
         }
 
+        body.professional-mode .timeline-pill-icon,
+        body.professional-mode .grid-card-icon,
+        body.professional-mode .achievement-icon,
+        body.professional-mode .achievement-popup .achievement-icon,
+        body.professional-mode .celebration-icon,
+        body.professional-mode .empty-state-icon,
+        body.professional-mode .icon-trigger,
+        body.professional-mode .icon-popup-btn {
+            filter: saturate(0.78) brightness(0.96);
+        }
+
         body.professional-mode .calendar-day.future {
-            background: rgba(110, 118, 125, 0.12);
+            background: rgba(140, 132, 120, 0.14);
         }
 
         body.professional-mode .calendar-day.no-tasks {
-            background: rgba(110, 118, 125, 0.2);
+            background: rgba(140, 132, 120, 0.22);
         }
 
         body.professional-mode .section,
@@ -1766,16 +1930,26 @@
         body.professional-mode .day-popup,
         body.professional-mode .onboarding-shell,
         body.professional-mode .color-legend-modal {
-            box-shadow: 0 18px 40px rgba(56, 67, 72, 0.08);
+            box-shadow: 0 16px 36px rgba(49, 47, 42, 0.08);
+        }
+
+        body.dark-mode.professional-mode .section,
+        body.dark-mode.professional-mode .modal,
+        body.dark-mode.professional-mode .celebration,
+        body.dark-mode.professional-mode .achievement-popup,
+        body.dark-mode.professional-mode .day-popup,
+        body.dark-mode.professional-mode .onboarding-shell,
+        body.dark-mode.professional-mode .color-legend-modal {
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
         }
 
         body.professional-mode .achievement.unlocked {
-            background: linear-gradient(135deg, #d8d6cf, #b8c1c5);
-            color: #2f3439;
+            background: linear-gradient(135deg, #d9d3c9, #c2c8bd);
+            color: #333736;
         }
 
         body.professional-mode .achievement.unlocked .achievement-name {
-            color: #2f3439;
+            color: #333736;
         }
 
         body.professional-mode #shareStreakBtn {
@@ -1793,6 +1967,17 @@
 
         body.dark-mode.professional-mode .slider {
             background-color: #3c4649;
+        }
+
+        #shareStreakBtn {
+            height: 40px;
+            padding: 0 12px !important;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            box-sizing: border-box;
         }
 
     </style>
@@ -1901,19 +2086,6 @@
                     </label>
                 </div>
 
-                <div class="toggle-switch">
-                    <div>
-                        <label>Easy Mode</label>
-                        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px; max-width: 360px;">
-                            Gives more XP, lets your streak survive one bad day, and makes the calendar more forgiving.
-                        </p>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="easyModeToggle" onchange="toggleEasyMode()">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
                 <div style="margin-bottom: 20px;">
                     <h4 style="margin-bottom: 4px; color: var(--text-primary);">Schedule View</h4>
                     <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 0;">How tasks are displayed on the Schedule tab</p>
@@ -1928,6 +2100,32 @@
                             <span class="sel-icon">⊞</span>Grid
                         </button>
                     </div>
+                </div>
+
+                <div class="toggle-switch">
+                    <div>
+                        <label>Easy Mode</label>
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px; max-width: 360px;">
+                            Gives more XP, lets your streak survive one bad day, and makes the calendar more forgiving.
+                        </p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="easyModeToggle" onchange="toggleEasyMode()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div>
+                        <label>Celebration Pop-Ups</label>
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px; max-width: 360px;">
+                            Shows celebration pop-ups for completed tasks, level-ups, and achievements.
+                        </p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="taskCelebrationToggle" onchange="toggleTaskCelebration()">
+                        <span class="slider"></span>
+                    </label>
                 </div>
 
                 <div style="margin-bottom: 20px;">
@@ -2153,6 +2351,7 @@
             totalCompleted: 0,
             achievements: [],
             notificationsEnabled: false,
+            taskCompletionCelebration: true,
             notifiedToday: {}, // { taskId: 'YYYY-MM-DD' } — tracks which tasks have fired today
             dailyHistory: {}, // { 'YYYY-MM-DD': { completed: X, total: Y, rating: 'darkgreen'/'green'/'yellow'/'orange'/'red'/'none' } }
             dailyTaskHistory: {}, // { 'YYYY-MM-DD': [{ id, name, completed, time, icon, recurring }] }
@@ -2168,6 +2367,7 @@
 
         let currentEditingTaskId = null;
         let onboardingSlideIndex = 0;
+        let onboardingTransitionDirection = 'next';
         const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'];
@@ -2408,6 +2608,7 @@
             if (typeof gameState.easyMode !== 'boolean') gameState.easyMode = false;
             if (typeof gameState.easyModeGraceUsed !== 'boolean') gameState.easyModeGraceUsed = false;
             if (typeof gameState.professionalMode !== 'boolean') gameState.professionalMode = false;
+            if (typeof gameState.taskCompletionCelebration !== 'boolean') gameState.taskCompletionCelebration = true;
             if (typeof gameState.onboardingCompleted !== 'boolean') gameState.onboardingCompleted = false;
             if (typeof gameState.notificationsExplicitlyDisabled !== 'boolean') {
                 gameState.notificationsExplicitlyDisabled = false;
@@ -2476,6 +2677,11 @@
             renderColorLegend();
             saveGameState();
             renderAll();
+        }
+
+        function toggleTaskCelebration() {
+            gameState.taskCompletionCelebration = !gameState.taskCompletionCelebration;
+            saveGameState();
         }
 
         // Check and update streak
@@ -2904,7 +3110,9 @@
                 gameState.totalCompleted++;
                 addXP(xp);
                 checkAchievements();
-                showCelebration(gameState.professionalMode ? 'Task Complete' : 'Task Complete! 🎯', `+${xp} XP`, getUiSymbol('celebrate_task', '🎯'));
+                if (gameState.taskCompletionCelebration) {
+                    showCelebration(gameState.professionalMode ? 'Task Complete' : 'Task Complete! 🎯', `+${xp} XP`, getUiSymbol('celebrate_task', '🎯'));
+                }
             } else {
                 gameState.completedToday = Math.max(0, gameState.completedToday - 1);
                 gameState.totalCompleted = Math.max(0, gameState.totalCompleted - 1);
@@ -3472,20 +3680,22 @@
                 `<div class="onboarding-dot ${index === onboardingSlideIndex ? 'active' : ''}"></div>`
             ).join('');
             content.innerHTML = `
-                <div class="onboarding-kicker">${slide.kicker}</div>
-                <div class="onboarding-title">${slide.title}</div>
-                <div class="onboarding-copy">${slide.copy}</div>
-                <div class="onboarding-panel">
-                    <div class="onboarding-list">
-                        ${slide.items.map(([icon, title, copy]) => `
-                            <div class="onboarding-item">
-                                <div class="onboarding-item-icon">${icon}</div>
-                                <div>
-                                    <div class="onboarding-item-title">${title}</div>
-                                    <div class="onboarding-item-copy">${copy}</div>
+                <div class="onboarding-slide ${onboardingTransitionDirection}">
+                    <div class="onboarding-kicker">${slide.kicker}</div>
+                    <div class="onboarding-title">${slide.title}</div>
+                    <div class="onboarding-copy">${slide.copy}</div>
+                    <div class="onboarding-panel">
+                        <div class="onboarding-list">
+                            ${slide.items.map(([icon, title, copy]) => `
+                                <div class="onboarding-item">
+                                    <div class="onboarding-item-icon">${icon}</div>
+                                    <div>
+                                        <div class="onboarding-item-title">${title}</div>
+                                        <div class="onboarding-item-copy">${copy}</div>
+                                    </div>
                                 </div>
-                            </div>
-                        `).join('')}
+                            `).join('')}
+                        </div>
                     </div>
                 </div>
             `;
@@ -3502,12 +3712,14 @@
                 completeOnboarding();
                 return;
             }
+            onboardingTransitionDirection = 'next';
             onboardingSlideIndex++;
             renderOnboarding();
         }
 
         function previousOnboardingSlide() {
             if (onboardingSlideIndex === 0) return;
+            onboardingTransitionDirection = 'prev';
             onboardingSlideIndex--;
             renderOnboarding();
         }
@@ -3516,19 +3728,22 @@
             gameState.onboardingCompleted = true;
             saveGameState();
             const onboarding = document.getElementById('onboarding');
-            onboarding.classList.remove('show');
+            onboarding.classList.add('exiting');
             setTimeout(() => {
+                onboarding.classList.remove('show');
+                onboarding.classList.remove('exiting');
                 onboarding.hidden = true;
-            }, 240);
-            switchTab('schedule');
-            window.scrollTo(0, 0);
-            document.documentElement.scrollTop = 0;
-            document.body.scrollTop = 0;
+                switchTab('schedule');
+                window.scrollTo(0, 0);
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
+            }, 420);
         }
 
         function maybeShowOnboarding() {
             if (gameState.onboardingCompleted) return;
             onboardingSlideIndex = 0;
+            onboardingTransitionDirection = 'next';
             window.scrollTo(0, 0);
             renderOnboarding();
         }
@@ -3681,6 +3896,8 @@
             document.body.classList.toggle('professional-mode', !!gameState.professionalMode);
             const easyModeToggle = document.getElementById('easyModeToggle');
             if (easyModeToggle) easyModeToggle.checked = !!gameState.easyMode;
+            const taskCelebrationToggle = document.getElementById('taskCelebrationToggle');
+            if (taskCelebrationToggle) taskCelebrationToggle.checked = !!gameState.taskCompletionCelebration;
             const professionalModeToggle = document.getElementById('professionalModeToggle');
             if (professionalModeToggle) professionalModeToggle.checked = !!gameState.professionalMode;
             refreshStaticLabels();
@@ -3788,6 +4005,7 @@
 
         // Celebrations
         function showCelebration(title, message, icon = null) {
+            if (!gameState.taskCompletionCelebration) return;
             document.getElementById('celebrationIcon').textContent = icon || getUiSymbol('celebrate_default', '🎉');
             document.getElementById('celebrationTitle').textContent = title;
             document.getElementById('celebrationMessage').textContent = message;
