@@ -30,8 +30,8 @@
         }
 
         :root {
-            --bg-gradient-start: #f1ece6;
-            --bg-gradient-end: #f1ece6;
+            --bg-gradient-start: #eaf0ff;
+            --bg-gradient-end: #eaf0ff;
             --card-bg: white;
             --text-primary: #333;
             --text-secondary: #666;
@@ -52,8 +52,8 @@
         }
 
         body.dark-mode {
-            --bg-gradient-start: #171717;
-            --bg-gradient-end: #171717;
+            --bg-gradient-start: #171d30;
+            --bg-gradient-end: #171d30;
             --card-bg: #2a2a2a;
             --text-primary: #e8e8e8;
             --text-secondary: #a0a0a0;
@@ -68,8 +68,8 @@
         }
 
         body.professional-mode {
-            --bg-gradient-start: #ece6dd;
-            --bg-gradient-end: #ece6dd;
+            --bg-gradient-start: #e5e8ee;
+            --bg-gradient-end: #e5e8ee;
             --card-bg: #fbfaf8;
             --text-primary: #30363a;
             --text-secondary: #5e686e;
@@ -90,8 +90,8 @@
         }
 
         body.dark-mode.professional-mode {
-            --bg-gradient-start: #161a1b;
-            --bg-gradient-end: #161a1b;
+            --bg-gradient-start: #1b2228;
+            --bg-gradient-end: #1b2228;
             --card-bg: #1a2022;
             --text-primary: #e2e7e6;
             --text-secondary: #a6b0af;
@@ -350,11 +350,24 @@
         .name-row {
             display: flex;
             gap: 10px;
-            align-items: flex-end;
+            align-items: flex-start;
         }
         .name-row .form-group {
             flex: 1;
             margin-bottom: 0;
+        }
+        .icon-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 46px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .icon-field label {
+            align-self: flex-start;
+            color: var(--text-primary);
+            font-size: 14px;
         }
         .icon-trigger {
             width: 46px;
@@ -368,6 +381,9 @@
             justify-content: center;
             font-size: 22px;
             flex-shrink: 0;
+            padding: 0;
+            line-height: 1;
+            text-align: center;
             -webkit-tap-highlight-color: transparent;
             transition: border-color 0.15s;
         }
@@ -1106,12 +1122,19 @@
 
         .toggle-switch {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
+            gap: 18px;
             margin-bottom: 20px;
             padding: 15px;
             background: var(--input-bg);
             border-radius: 12px;
+        }
+
+        .toggle-switch > div {
+            flex: 1;
+            min-width: 0;
+            padding-right: 10px;
         }
 
         .toggle-switch label {
@@ -1124,6 +1147,8 @@
             display: inline-block;
             width: 50px;
             height: 24px;
+            flex-shrink: 0;
+            margin-top: 2px;
         }
 
         .switch input {
@@ -1183,6 +1208,14 @@
             border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
+        }
+
+        body.professional-mode .calendar-nav {
+            background: #8a959b;
+        }
+
+        body.dark-mode.professional-mode .calendar-nav {
+            background: #6e7a81;
         }
 
         .calendar-month {
@@ -1671,8 +1704,6 @@
             box-shadow: 0 10px 22px rgba(102, 126, 234, 0.22);
         }
 
-        body.professional-mode .task-points,
-        body.professional-mode .grid-card-xp,
         body.professional-mode .settings-button {
             color: var(--accent-primary);
         }
@@ -1745,6 +1776,15 @@
 
         body.professional-mode .achievement.unlocked .achievement-name {
             color: #2f3439;
+        }
+
+        body.professional-mode #shareStreakBtn {
+            min-height: 40px;
+            line-height: 1.2;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         body.professional-mode .slider {
@@ -1852,7 +1892,7 @@
                     <div>
                         <label>Professional Mode</label>
                         <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px; max-width: 360px;">
-                            Replaces built-in emojis with symbols and shifts the app to a more muted, understated presentation.
+                            Shifts the app to a more muted, understated presentation with more reserved interface symbols.
                         </p>
                     </div>
                     <label class="switch">
@@ -1946,7 +1986,10 @@
                 <label>Name</label>
                 <input type="text" id="modalTaskName" placeholder="What do you need to do?" style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 12px; background: var(--input-bg); color: var(--text-primary); font-size: 16px;" />
             </div>
-            <button class="icon-trigger" id="modalIconTrigger" onclick="openIconPopup('modal')">✕</button>
+            <div class="icon-field">
+                <label>Icon</label>
+                <button class="icon-trigger" id="modalIconTrigger" onclick="openIconPopup('modal')">✕</button>
+            </div>
         </div>
 
         <div class="checkbox-group">
@@ -1988,7 +2031,10 @@
                 <label>Name</label>
                 <input type="text" id="editTaskName" placeholder="What do you need to do?" style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 12px; background: var(--input-bg); color: var(--text-primary); font-size: 16px;" />
             </div>
-            <button class="icon-trigger" id="editIconTrigger" onclick="openIconPopup('edit')">✕</button>
+            <div class="icon-field">
+                <label>Icon</label>
+                <button class="icon-trigger" id="editIconTrigger" onclick="openIconPopup('edit')">✕</button>
+            </div>
         </div>
         
         <div class="checkbox-group">
@@ -2053,6 +2099,8 @@
         <div class="icon-popup-grid" id="iconPopupGrid"></div>
     </div>
 
+    <input type="text" id="customEmojiInput" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" style="position: fixed; left: -9999px; top: -9999px; opacity: 0; pointer-events: none;" />
+
     <div class="day-popup" id="dayPopup">
         <h3 id="dayPopupDate"></h3>
         <p id="dayPopupStats"></p>
@@ -2073,7 +2121,7 @@
         <button id="colorLegendCloseBtn" onclick="closeColorLegend()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 500; font-size: 15px;">Got it!</button>
     </div>
 
-    <div class="onboarding" id="onboarding">
+    <div class="onboarding" id="onboarding" hidden>
         <div class="onboarding-shell">
             <div class="onboarding-header">
                 <div class="onboarding-brand">ScheduleBuddy</div>
@@ -2160,9 +2208,9 @@
             action_notify_off: '',
             empty_none: '□',
             empty_rest: '—',
-            celebrate_default: '◆',
-            celebrate_level: '▲',
-            celebrate_task: '●',
+            celebrate_default: '✦',
+            celebrate_level: '✦',
+            celebrate_task: '✦',
             celebrate_copy: '↗',
             alert_clear: '!',
             progress_done: '✓',
@@ -2372,13 +2420,13 @@
 
         function getBuiltInTaskIcon(id) {
             if (!ICON_LIBRARY[id]) return null;
-            return gameState.professionalMode ? (PROFESSIONAL_SYMBOLS[id] || ICON_LIBRARY[id].emoji) : ICON_LIBRARY[id].emoji;
+            return ICON_LIBRARY[id].emoji;
         }
 
         function getTaskIconDisplay(task) {
             if (task.icon) {
                 if (task.icon.startsWith('custom:')) return task.icon.slice(7);
-                return getBuiltInTaskIcon(task.icon) || '';
+                return getPickerTaskIcon(task.icon) || '';
             }
             return '';
         }
@@ -2964,7 +3012,6 @@
         // ── Icon library ─────────────────────────────────────────────
         const ICON_LIBRARY = {
             meal:      { label: 'Meal',      emoji: '🍽️' },
-            water:     { label: 'Water',     emoji: '💧' },
             exercise:  { label: 'Exercise',  emoji: '🏋️' },
             walk:      { label: 'Walk',      emoji: '🚶' },
             meditate:  { label: 'Meditate',  emoji: '🧘' },
@@ -3004,11 +3051,33 @@
                          onclick="iconPopupPick('${id}')"
                          title="${label}">${emoji}</button>`
             ).join('');
+            html += `<button class="icon-popup-btn ${iconPopupSelected && iconPopupSelected.startsWith('custom:') ? 'selected' : ''}"
+                         data-icon-id="custom"
+                         onclick="openCustomEmojiPicker()"
+                         title="Custom icon">+</button>`;
 
             grid.innerHTML = html;
 
             document.getElementById('iconPopupOverlay').classList.add('show');
             document.getElementById('iconPopup').classList.add('show');
+        }
+
+        function openCustomEmojiPicker() {
+            const input = document.getElementById('customEmojiInput');
+            if (!input) return;
+            iconPopupSelected = 'custom';
+            input.value = '';
+            input.focus();
+            input.click();
+        }
+
+        function applyCustomEmoji(value) {
+            const emoji = value.trim();
+            if (!emoji || !iconPopupSource) return;
+            const trigger = document.getElementById(iconPopupSource + 'IconTrigger');
+            trigger.textContent = emoji;
+            trigger.dataset.iconId = `custom:${emoji}`;
+            closeIconPopup();
         }
 
         function iconPopupPick(id) {
@@ -3396,6 +3465,7 @@
             const backBtn = document.getElementById('onboardingBackBtn');
             const nextBtn = document.getElementById('onboardingNextBtn');
             if (!onboarding || !content || !progress || !backBtn || !nextBtn) return;
+            onboarding.hidden = false;
 
             const slide = ONBOARDING_SLIDES[onboardingSlideIndex];
             progress.innerHTML = ONBOARDING_SLIDES.map((_, index) =>
@@ -3422,7 +3492,9 @@
 
             backBtn.style.visibility = onboardingSlideIndex === 0 ? 'hidden' : 'visible';
             nextBtn.textContent = onboardingSlideIndex === ONBOARDING_SLIDES.length - 1 ? 'Get Started' : 'Next';
-            onboarding.classList.add('show');
+            requestAnimationFrame(() => {
+                onboarding.classList.add('show');
+            });
         }
 
         function nextOnboardingSlide() {
@@ -3443,7 +3515,11 @@
         function completeOnboarding() {
             gameState.onboardingCompleted = true;
             saveGameState();
-            document.getElementById('onboarding').classList.remove('show');
+            const onboarding = document.getElementById('onboarding');
+            onboarding.classList.remove('show');
+            setTimeout(() => {
+                onboarding.hidden = true;
+            }, 240);
             switchTab('schedule');
             window.scrollTo(0, 0);
             document.documentElement.scrollTop = 0;
@@ -3923,6 +3999,7 @@
 
             const modalTime = document.getElementById('modalTime');
             const editTime = document.getElementById('editTime');
+            const customEmojiInput = document.getElementById('customEmojiInput');
             if (modalTime) {
                 modalTime.addEventListener('input', () => updateNotificationVisibility('modal'));
                 modalTime.addEventListener('change', () => updateNotificationVisibility('modal'));
@@ -3930,6 +4007,22 @@
             if (editTime) {
                 editTime.addEventListener('input', () => updateNotificationVisibility('edit'));
                 editTime.addEventListener('change', () => updateNotificationVisibility('edit'));
+            }
+            if (customEmojiInput) {
+                const commitCustomEmoji = () => {
+                    if (customEmojiInput.value.trim()) {
+                        applyCustomEmoji(customEmojiInput.value);
+                        customEmojiInput.value = '';
+                    }
+                };
+                customEmojiInput.addEventListener('input', commitCustomEmoji);
+                customEmojiInput.addEventListener('change', commitCustomEmoji);
+                customEmojiInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        commitCustomEmoji();
+                    }
+                });
             }
             
             // Close modals when clicking overlay
