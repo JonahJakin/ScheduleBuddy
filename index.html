@@ -36,7 +36,7 @@
 /* ───────── BASE ───────── */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 [hidden]{display:none!important;}
-html,body{height:100%;}
+html,body{height:100%;overscroll-behavior:none;}
 html{background:var(--paper);touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 body{overflow:hidden;background:var(--paper);color:var(--txt);font-family:var(--body);font-weight:500;font-size:16px;line-height:1.4;-webkit-font-smoothing:antialiased;}
 button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;}
@@ -91,7 +91,7 @@ h2{font-family:var(--pix);font-weight:400;font-size:26px;line-height:1.05;}
 @keyframes bump{40%{transform:translateY(-5px) scale(1.08)}}
 .daybar{display:flex;align-items:center;gap:8px;}
 .daybar .title{flex:1;min-width:0;text-align:center;background:var(--card);color:var(--txt);border:3px solid var(--ink);border-radius:9px;box-shadow:0 3px 0 var(--ink);height:40px;display:flex;align-items:center;justify-content:center;font-family:var(--pix);font-size:23px;line-height:1;white-space:nowrap;overflow:hidden;}
-.scroll{position:relative;z-index:2;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.scroll{position:relative;z-index:2;flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:none;-webkit-overflow-scrolling:touch;}
 .any{display:flex;flex-direction:column;align-items:flex-start;gap:9px;padding:20px 12px 6px 12px;}
 .any-l{font-family:var(--pix);font-size:21px;line-height:1;color:#1b2340;}
 .any .blk{position:relative;min-height:48px;width:min(250px,66%);}
@@ -106,6 +106,11 @@ h2{font-family:var(--pix);font-weight:400;font-size:26px;line-height:1.05;}
 .blk small{font-size:12.5px;color:#55607e;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;}
 .blk.done{background:#d8f0c8;} .blk.now{background:#ffd75e;} .blk.late{background:#f6ddd6;} .blk.late small{color:#b3403d;}
 .night .blk{border-color:#0b1022;box-shadow:3px 3px 0 #0b1022;}
+.night .top .chip,.night .daybanner{border-color:#0b1022;box-shadow:3px 3px 0 #0b1022;}
+.night .top .btn{border-color:#0b1022;box-shadow:0 4px 0 #0b1022;}
+.night .top .btn:active{box-shadow:0 1px 0 #0b1022;}
+.night .trayhint{border-color:#0b1022;box-shadow:0 4px 0 #0b1022;}
+.night .empty .btn{border-color:#0b1022;box-shadow:0 5px 0 #0b1022;}
 .chk{width:46px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
 .chk i{width:30px;height:30px;border:3px solid #1b2340;border-radius:50%;background:#fffaf0;display:flex;align-items:center;justify-content:center;transition:transform .08s;}
 .chk:active i{transform:scale(.88);}
@@ -118,6 +123,7 @@ h2{font-family:var(--pix);font-weight:400;font-size:26px;line-height:1.05;}
 @keyframes hop{0%,100%{transform:translateY(0)}45%{transform:translateY(-22px)}}
 .spark{position:absolute;z-index:5;width:6px;height:6px;background:#ffd75e;box-shadow:0 0 0 2px #1b2340;animation:spark .8s ease-out forwards;pointer-events:none;}
 @keyframes spark{to{transform:translate(var(--dx),var(--dy)) scale(.3);opacity:0}}
+#homeWrap{overflow-x:clip;}      /* the grass is wider than the screen; this stops that extra width from making the page slide sideways */
 #homeC{margin-top:6px;max-width:none;}
 .daybanner{display:flex;align-items:center;gap:8px;background:var(--card);color:var(--txt);border:3px solid var(--ink);border-radius:9px;box-shadow:3px 3px 0 var(--ink);padding:5px 6px 7px 12px;font-family:var(--pix);font-size:23px;line-height:1;}
 .daybanner span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -157,6 +163,8 @@ h2{font-family:var(--pix);font-weight:400;font-size:26px;line-height:1.05;}
 .adv{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;}
 
 /* ───────── ADVENTURE: map, fish book, fishing game ───────── */
+#p-adv{padding:calc(10px + var(--st)) 12px 24px;}
+#p-adv .toprow{margin-bottom:8px;}
 .mapwrap{position:relative;padding:0;overflow:hidden;margin:0 auto;box-sizing:content-box;}
 .pin{position:relative;}
 #mapC{display:block;}
@@ -337,7 +345,7 @@ body.sheet-open .toast{bottom:auto;top:calc(12px + var(--st));}
         <div class="daybanner" id="dayBanner" hidden><span id="dayBannerT"></span><button class="btn sm c" data-a="backToday">Back to today</button></div>
         <div class="daybanner" id="nudge" hidden><span>Time to back up</span><button class="btn sm" data-a="nudgeSave">Save backup</button><button class="btn sm c" data-a="nudgeLater">Later</button></div>
       </header>
-      <div class="scroll" id="tscroll"><div class="emptywrap" id="emptyDay"></div><div class="tl2" id="tl2"></div><div class="any" id="anytime" hidden></div><canvas id="homeC"></canvas></div>
+      <div class="scroll" id="tscroll"><div class="emptywrap" id="emptyDay"></div><div class="tl2" id="tl2"></div><div class="any" id="anytime" hidden></div><div id="homeWrap"><canvas id="homeC"></canvas></div></div>
       <button class="trayhint" id="trayHint" data-a="trayGo" hidden><span></span><i></i></button>
     </section>
     <section class="tab" id="t-adv"><div class="page" id="p-adv"></div></section>
@@ -785,11 +793,11 @@ let mapBusy=false;
 function renderAdv(){
   advDefaults();
   const el=$('p-adv');
-  el.innerHTML='<div class="toprow" style="margin-bottom:10px"><div class="chips" id="advChips"></div><button class="btn sm" data-a="bookAll">Catch Log</button></div>'
+  el.innerHTML='<div class="toprow"><div class="chips" id="advChips"></div><button class="btn sm" data-a="bookAll">Catch Log</button></div>'
     +'<div class="panel mapwrap" id="mapwrap"><div class="pin" id="mapin"><canvas id="mapC"></canvas><canvas id="mapBud"></canvas></div></div>'
     +'<div class="advbtns"><button class="btn b" data-a="openShop">Shop</button><button class="btn p" data-a="openArcade">Arcade</button></div>';
   ['coins','bait','tickets'].forEach(f=>{const src=iconSrc(f),d=document.createElement('div');d.className='chip';d.innerHTML='<img alt="" src="'+src.url+'" style="image-rendering:pixelated;width:'+(src.w*ps(1.75))+'px;height:'+(src.h*ps(1.75))+'px"><span>'+big(S.wallet[f])+'</span>';d.setAttribute('aria-label',S.wallet[f]+' '+f);$('advChips').appendChild(d);});
-  mapSpr().paint($('mapC'));fitFill($('mapwrap'),$('mapin'),$('mapC'),MW,MH,el.clientWidth-38,12);       // whole screen pixels per map pixel
+  mapSpr().paint($('mapC'));fitFill($('mapwrap'),$('mapin'),$('mapC'),MW,MH,el.clientWidth-30,12);       // whole screen pixels per map pixel
   const wrap=$('mapin'),bud=$('mapBud');miniBuddy(S.buddy).paint(bud);bud.style.width=(14/MW*100)+'%';bud.style.height=(15/MH*100)+'%';
   placeBud(MAPN[S.at].x,MAPN[S.at].y);
   Object.keys(MAPN).forEach(id=>{
@@ -1416,7 +1424,7 @@ const ARC_ACT={
    11 welcome · 12 backup · 13 buttons · 14 start-up */
 
 /* ───────── 1. BASICS ───────── */
-const KEY='schedulebuddy2',OLDKEY='scheduleBuddyGameState',VERSION='4.8';
+const KEY='schedulebuddy2',OLDKEY='scheduleBuddyGameState',VERSION='4.9';
 const TASK_CAP=30;         // the most coins tasks can pay in one day
 const TASK_COINS=5;        // what one finished task pays, until a day has so many tasks that this would pass the cap
 const DAY_BONUS=10;        // extra coins for finishing every task in a day
@@ -1619,7 +1627,7 @@ const nightAmt=h=>Math.max(0,Math.min(0.55,h>=12?(h-18.4)/2.2*0.55:(6.4-h)/1.2*0
 let lastHomeKey='',lastNa=0;
 function drawSky(){
   const h=nowMin()/60,tabEl=$('t-today'),PH=tabEl.clientHeight||700;
-  tabEl.style.background=skyAt(h);tabEl.classList.toggle('night',h>=18.9||h<6.2);
+  tabEl.style.background=skyAt(h);tabEl.classList.toggle('night',h>=18.9||h<6.2);paintChrome();
   const put=(el,f)=>{if(f>=0&&f<=1){el.style.opacity=1;el.style.left=(8+70*f)+'%';el.style.top=(PH-40-Math.sin(Math.PI*f)*(PH-150))+'px';}else el.style.opacity=0;};
   put($('sunC'),(h-6)/13.5);put($('moonC'),((h<6?h+24:h)-19.5)/10.5);
   const starAmt=Math.max(0,Math.min(1,h>=12?(h-19)/1.5:(6-h)/1));
@@ -1630,9 +1638,10 @@ function drawSky(){
 }
 /* The little house scene, widened with extra grass so it fills the screen at an even pixel size. */
 function paintHome(){
-  const cv=$('homeC'),W=$('t-today').clientWidth||390,sp=home(lastNa,S.house,tick),k=ps(W/sp.w),need=Math.ceil(W/k),pad=Math.max(0,Math.ceil((need-sp.w)/2)),wide=new Spr(sp.w+pad*2,sp.h);
+  const cv=$('homeC'),W=$('t-today').clientWidth||390,sp=home(lastNa,S.house,tick),k=ps(W/sp.w),need=Math.ceil(W/k)+60,pad=Math.max(0,Math.ceil((need-sp.w)/2)),wide=new Spr(sp.w+pad*2,sp.h);     // 30 art pixels of extra grass past each side of the screen
   for(let y=0;y<sp.h;y++)for(let x=0;x<wide.w;x++){const c=sp.get(Math.max(0,Math.min(sp.w-1,x-pad)),y);if(c)wide.set(x,y,c);}
   wide.paint(cv);cv.style.width=(wide.w*k)+'px';cv.style.height=(wide.h*k)+'px';cv.style.marginLeft=((W-wide.w*k)/2)+'px';
+  const g=lastNa>0?mix(C.grass,'#141a3a',lastNa):C.grass,h=Math.round(wide.h*k);cv.style.boxShadow='0 '+h+'px 0 0 '+g+',0 '+(h*2)+'px 0 0 '+g+',0 '+(h*3)+'px 0 0 '+g;       // more grass underneath, in case the screen is pulled up past the end
 }
 function dayTitle(k){const t=today();return k===t?'Today, '+MONS[dOf(k).getMonth()]+' '+dOf(k).getDate():k===addDays(t,1)?'Tomorrow':k===addDays(t,-1)?'Yesterday':fmtDay(k);}
 function blockHTML(x,k,o){
@@ -1946,7 +1955,13 @@ function renderSet(){
 }
 function applyTheme(){
   const t=S.set.theme==='auto'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):S.set.theme;
-  document.documentElement.setAttribute('data-theme',t);$('themeColor').setAttribute('content',t==='dark'?'#141a30':'#f6efdd');
+  document.documentElement.setAttribute('data-theme',t);paintChrome();
+}
+function paintChrome(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark',paper=dark?'#141a30':'#f6efdd';
+  const onSky=S&&S.onboarded&&tab==='today'&&$('homeV').hidden&&$('shopV').hidden&&$('arcV').hidden;
+  const c=onSky?skyAt(nowMin()/60):paper;
+  $('themeColor').setAttribute('content',c);document.documentElement.style.background=c;document.body.style.background=onSky?c:'';
 }
 
 /* ───────── 11. WELCOME ───────── */
@@ -1997,7 +2012,7 @@ function goTab(t){
   tab=t;['today','adv','cal','set'].forEach(n=>$('t-'+n).classList.toggle('on',n===t));
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===t));
   if(t==='today')scrolledFor='';
-  render();
+  render();paintChrome();
 }
 const ACT={
   tab(el){if(el.dataset.v==='today'){if(tab==='today')viewDay=today();scrolledFor='';}sfx('tap');goTab(el.dataset.v);},
