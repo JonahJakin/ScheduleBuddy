@@ -216,11 +216,8 @@ button.stat:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink);
 .shead{display:flex;align-items:center;gap:10px;}
 #homeV .vhead{padding-bottom:8px;}
 #awn{flex-shrink:0;margin-top:var(--st0);max-width:none;}
-#shopV{background:linear-gradient(#b98455 0 var(--st0),var(--paper) var(--st0)) #b98455;}
-#arcV{background:linear-gradient(#4c4078 0 var(--st0),var(--paper) var(--st0)) #4c4078;}
-/* A sliver along the very top edge, always the same colour as what is drawn right under it, so it cannot be seen. The iPhone colours the strip behind its clock
-   from whatever is pinned to the top edge of the app, and this gives it the right colour on every screen (paintChrome sets it). */
-#topTint{position:fixed;left:0;right:0;top:0;height:5px;z-index:90;background:var(--paper);}
+#shopV{background:linear-gradient(#b98455 0 var(--st0),var(--paper) var(--st0));}
+#arcV{background:linear-gradient(#4c4078 0 var(--st0),var(--paper) var(--st0));}
 .shopbody{flex:1;overflow-y:auto;padding:0 12px calc(20px + var(--sb));}
 .roomwrap{position:relative;box-sizing:content-box;margin:0 auto;border:3px solid var(--ink);border-radius:12px;box-shadow:4px 4px 0 var(--ink);overflow:hidden;}
 #roomC{display:block;}
@@ -478,7 +475,6 @@ body.sheet-open .toast{bottom:auto;top:calc(12px + var(--st));}
 </div>
 <div class="sheet" id="sheet" hidden><div class="sheet-box" id="sheetBox"></div></div>
 <div class="ob" id="ob" hidden></div>
-<div id="topTint"></div>
 <div class="toast" id="toast" role="status"></div>
 <input id="importFile" type="file" accept="application/json,.json" hidden>
 <script>
@@ -1942,7 +1938,7 @@ const ARC_ACT={
    11 welcome · 12 backup · 13 buttons · 14 start-up */
 
 /* ───────── 1. BASICS ───────── */
-const KEY='schedulebuddy2',OLDKEY='scheduleBuddyGameState',VERSION='4.42';
+const KEY='schedulebuddy2',OLDKEY='scheduleBuddyGameState',VERSION='4.41';
 const TASK_CAP=30;         // the most coins tasks can pay in one day
 const TASK_COINS=5;        // what one finished task pays, until a day has so many tasks that this would pass the cap
 const DAY_BONUS=10;        // extra coins for finishing every task in a day
@@ -2717,13 +2713,11 @@ function paintChrome(){
   musicSync();
   const dark=document.documentElement.getAttribute('data-theme')==='dark',paper=dark?'#141a30':'#f6efdd';
   const up=id=>!$(id).hidden&&!$(id).classList.contains('closing');
-  const top=!$('arcDev').hidden?'#1b2340':up('shopV')?'#b98455':up('arcV')?'#4c4078':null;                 // the game console's navy, the shop's awning brown, the arcade's marquee purple
+  const top=up('shopV')?'#b98455':up('arcV')?'#4c4078':null;                 // the shop's awning brown, the arcade's marquee purple
   const onSky=S&&S.onboarded&&tab==='today'&&!up('homeV')&&!up('spotV')&&!top;
   const atWater=up('spotV'),greet=!$('ob').hidden&&!$('ob').classList.contains('leaving');
   const c=greet?'#8fc8f0':top||((onSky||atWater)?skyAt(nowMin()/60):paper);
-  const edge=up('sheet')?mix(c,'#0b1022',.55):c;                              // a pop-up dims everything behind it, so the top edge dims with it
-  $('topTint').style.background=edge;
-  $('themeColor').setAttribute('content',edge);document.documentElement.style.background=c;document.body.style.background=(onSky||top||atWater)?c:'';
+  $('themeColor').setAttribute('content',c);document.documentElement.style.background=c;document.body.style.background=(onSky||top||atWater)?c:'';
 }
 
 /* ───────── 11. WELCOME ───────── */
@@ -2952,7 +2946,6 @@ function startApp(){
 load();applyTheme();
 try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(S)applyTheme();});}catch(e){}
 if(S.onboarded)startApp();else{ob={step:0,kind:S.buddy,name:S.name||'',starts:[]};renderOb();}
-try{const mo=new MutationObserver(()=>{if(S)paintChrome();});['sheet','arcDev'].forEach(id=>mo.observe($(id),{attributes:true,attributeFilter:['hidden','class']}));}catch(e){}
 setInterval(animate,140);setInterval(heartbeat,20000);
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
 if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
