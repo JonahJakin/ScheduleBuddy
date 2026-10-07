@@ -411,6 +411,12 @@ button.stat:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink);
 
 /* ───────── WELCOME ───────── */
 #sbar{position:fixed;left:0;right:0;top:0;height:var(--st0);z-index:90;pointer-events:none;background:#1b2340;}
+/* An installed app on iPhone that draws under the clock is handed a screen that stops short of the real bottom by the height of the clock strip.
+   --gap is that shortfall (measured at start-up, 0 everywhere else); every full-screen layer is stretched down by it. */
+html.gap,html.gap body{height:calc(100% + var(--gap));overflow:hidden;}
+html.gap #app{height:calc(100vh + var(--gap));height:calc(100dvh + var(--gap));}
+html.gap #game,html.gap .view,html.gap #arcDev,html.gap .sheet,html.gap .ob{bottom:calc(0px - var(--gap));}
+html.gap .toast{bottom:calc(82px + var(--sb) - var(--gap));}
 .ob{position:fixed;inset:0;z-index:60;background:#8fc8f0;overflow-y:auto;overflow-x:hidden;transition:opacity .28s ease;}
 .ob.leaving{opacity:0;pointer-events:none;}
 .ob h1{color:#fffdf5;text-shadow:3px 3px 0 #1b2340;}
@@ -1940,7 +1946,7 @@ const ARC_ACT={
    11 welcome · 12 backup · 13 buttons · 14 start-up */
 
 /* ───────── 1. BASICS ───────── */
-const KEY='schedulebuddy2',OLDKEY='scheduleBuddyGameState',VERSION='4.39';
+const KEY='schedulebuddy2',OLDKEY='scheduleBuddyGameState',VERSION='4.40';
 const TASK_CAP=30;         // the most coins tasks can pay in one day
 const TASK_COINS=5;        // what one finished task pays, until a day has so many tasks that this would pass the cap
 const DAY_BONUS=10;        // extra coins for finishing every task in a day
@@ -2746,7 +2752,7 @@ function renderOb(dir){
     +'</div><button class="btn" data-a="obNext" id="obGo">'+(ob.starts.length?'Continue':'Skip')+'</button><button class="btn c" data-a="obBack">Back</button>';
   else h+='<h1>How it works</h1><div class="panel how"><div id="how0"></div><div id="how1"></div><div id="how2"></div><div id="how3"></div></div>'
     +'<p class="note">Worms are for fishing, and fish sell for coins. Coins buy tackle, furniture and outfits. Tickets are for the arcade.</p><button class="btn" data-a="obDone">Start</button><button class="btn c" data-a="obBack">Back</button>';
-  el.innerHTML=(ob.step===2?'':'<canvas class="obcloud" style="top:4%;left:6%"></canvas><canvas class="obcloud" style="top:9%;right:4%"></canvas>')+(ob.step===0?'<canvas id="obHome"></canvas>':'')+h+'</div></div>';el.scrollTop=0;
+  el.innerHTML=(ob.step===2?'':'<canvas class="obcloud" style="top:calc(var(--st0) + 4%);left:6%"></canvas><canvas class="obcloud" style="top:calc(var(--st0) + 9%);right:4%"></canvas>')+(ob.step===0?'<canvas id="obHome"></canvas>':'')+h+'</div></div>';el.scrollTop=0;
   el.querySelectorAll('.obcloud').forEach((cv,i)=>{const c=new Spr(34,12);c.ell(10,8,9,3.4,C.white);c.ell(17,5,7,4.4,C.white);c.ell(25,8,8,3,C.white);c.paint(cv);const k=ps(i?2:3);cv.style.width=34*k+'px';cv.style.height=12*k+'px';});
   if(ob.step===0){const sp=home(0,{},3),W=Math.min(el.clientWidth,480),k=ps(W/sp.w)+1/(window.devicePixelRatio||1),cv=$('obHome');sp.paint(cv);cv.style.width=sp.w*k+'px';cv.style.height=sp.h*k+'px';}       // the same house that sits at the bottom of the day
   paintChrome();
@@ -2946,6 +2952,14 @@ function startApp(){
   tlLive.kind=S.buddy;advDefaults();homeDefaults();arcDefaults();rollDays();adoptRewards();frDefaults();settle(today());checkMisses();frSettle(today());frSettle(addDays(today(),-1));save();
   renderWallet();viewDay=today();goTab('today');
 }
+function fixGap(){
+  try{const root=document.documentElement,standalone=navigator.standalone===true||matchMedia('(display-mode: standalone)').matches;
+    root.classList.remove('gap');root.style.removeProperty('--gap');if(!standalone)return;
+    const p=document.createElement('div');p.style.cssText='position:fixed;left:0;bottom:0;width:1px;height:1px;padding-top:env(safe-area-inset-top,0px);box-sizing:content-box;visibility:hidden';document.body.appendChild(p);
+    const top=parseFloat(getComputedStyle(p).paddingTop)||0,bottom=p.getBoundingClientRect().bottom,tall=Math.max(screen.height,screen.width),wide=Math.min(screen.height,screen.width),full=innerWidth<innerHeight?tall:wide,gap=full-bottom;p.remove();
+    if(top>0&&gap>4&&gap<=top+6){root.style.setProperty('--gap',gap+'px');root.classList.add('gap');}}catch(e){}
+}
+fixGap();window.addEventListener('resize',fixGap);window.addEventListener('orientationchange',()=>setTimeout(fixGap,300));
 load();applyTheme();
 try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(S)applyTheme();});}catch(e){}
 if(S.onboarded)startApp();else{ob={step:0,kind:S.buddy,name:S.name||'',starts:[]};renderOb();}
